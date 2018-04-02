@@ -1,0 +1,63 @@
+body {
+  font-family: Montserrat,'Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-weight: 900;
+}
+
+/*Main content area*/
+
+.navbar {
+	background: #343a40;
+	min-height: 30px;
+}
+
+.item-onclick{
+	background: #4285f4;
+}
+
+.style-image:hover {
+	background: #4285f4;
+	cursor:pointer;
+}
+
+#img-preview {
+	max-width: 100%;
+	display: block;
+	height: auto;
+	visibility: hidden;
+}
+
+#img-upload {
+	width: 100px;
+	height: 50px;
+	font-weight: 900;
+	font-size: larger;
+}
+
+.result-section {
+	margin-bottom: 250px;
+}
+
+#scroll-to-top {
+  position: fixed;
+  right: 25px;
+  bottom: 50px;
+  display: none;
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  color: white;
+  background: rgba(52, 58, 64, 0.5);
+  line-height: 45px;
+}
+
+#scroll-to-top:focus, #scroll-to-top:hover {
+  color: white;
+}
+
+#scroll-to-top:hover {
+  background: #343a40;
+}
+
+#scroll-to-top i {
+  font-weight: 800;
+}
