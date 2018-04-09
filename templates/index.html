@@ -42,7 +42,7 @@
             <h4 class="text-muted">Upload your image</h4>
           </div>
         </div>
-        <form action="/upload_image" id="image-submit" method=post enctype=multipart/form-data>
+        <form action="javascript:;" id="image-submit" onsubmit="return makeForm(this);" method=post enctype=multipart/form-data>
           <div class="row mt-3">
             <div class="col-lg-3 text-center">
               <input name="file" class="form-control" type="file" id="img-input" accept="image/*">
@@ -53,7 +53,7 @@
           </div>
           <div class="d-flex justify-content-center">
             <div class="row">
-              <button type="submit" id="img-upload" class="btn btn-primary mt-4">Go!</button>
+              <button type="submit" onclick="return makeForm(this);" id="img-upload" class="btn btn-primary mt-4">Go!</button>
             </div>
           </div>
         </form>
@@ -75,94 +75,101 @@
 
 {% block script %}
 <script type="text/javascript">
-$(function() {
-  "use strict";
-  var selectedStyleImage;
-  function readURL(input) {
+		"use strict";
+		var selectedStyleImage;
+		function makeForm(e) {
+			event.preventDefault();
+			if($("#img-input").prop("files")[0] != undefined && selectedStyleImage != undefined) {
+			  var form = new FormData();
+			  form.append("file", $("#img-input").prop("files")[0]);
+			  sendData(form);
+			  $(".result-section").removeClass("d-none");
+			  $('html, body').animate({
+			                  scrollTop: $(".result-section").offset().top
+			              }, 1000, "easeInQuint");
+			} else if(selectedStyleImage == undefined) {
+			  alert('no style selected');
+			} else {
+			  alert('no uploaded');
+			}
+		};
+		function readURL(input) {
 
-    if (input.files && input.files[0]) {
-      var reader = new FileReader();
+		  if (input.files && input.files[0]) {
+		    var reader = new FileReader();
 
-      reader.onload = function(e) {
-        $("#img-preview").css("visibility", "visible");
-        $("#img-preview").attr("src", e.target.result);
-      }
+		    reader.onload = function(e) {
+		      $("#img-preview").css("visibility", "visible");
+		      $("#img-preview").attr("src", e.target.result);
+		    }
 
-      reader.readAsDataURL(input.files[0]);
-    }
-  }
+		    reader.readAsDataURL(input.files[0]);
+		  }
+		}
 
-  function sendData(formdata) {
-    $.ajax({
-      url: "/upload_image",
-      data: formdata,
-      type: "POST",
-      contentType: false,
-      processData: false,
-      success: function(response) {
-                console.log('success');
-                console.log(typeof(response));
-                setImage(JSON.parse(response));
-                
-            },
-            error: function(error) {
-                console.log("fail");
-                console.log(error);
-            }
-    });
-  };
+		function sendData(formdata) {
+		alert('send data');
+		  $.ajax({
+		    url: "/upload_image",
+		    data: formdata,
+		    type: "POST",
+		    contentType: false,
+		    processData: false,
+		    async: true,
+            cache: false,
+            headers: { "cache-control": "no-cache" },
+		    success: function(response) {
+		              console.log('success');
+		              console.log(typeof(response));
+		              alert('success');
+		              setImage(JSON.parse(response));
+		              
+		          },
+		          error: function(error) {
+		              console.log("fail");
+		              console.log(error);
+		              alert('fail');
+		              alert(error.responseText);
+		          }
+		  });
+		  return false;
+		};
 
-  function setImage(data) {
-    $("#img-output").removeClass("d-none");
-    $("#img-output").attr("src","data:image/png;base64," + data["image"]);    
-  };
+		function setImage(data) {
+		  $("#img-output").removeClass("d-none");
+		  $("#img-output").attr("src","data:image/jpeg;base64," + data["image"]);
 
-  $("#img-input").change(function() {
-    readURL(this);
-  });
+		};
+	$(function() {
+	  $("#img-input").change(function() {
+	    readURL(this);
+	  });
 
-  $("#image-submit").submit(function() {
-    event.preventDefault();
-    if($("#img-input").prop("files")[0] != undefined && selectedStyleImage != undefined) {
-      var form = new FormData($(this));
-      form.append("file", $("#img-input").prop("files")[0]);
-      sendData(form);
-      $(".result-section").removeClass("d-none");
-      $('html, body').animate({
-                      scrollTop: $(".result-section").offset().top
-                  }, 1000, "easeInQuint");
-    } else if(selectedStyleImage == undefined) {
-      alert('no style selected');
-    } else {
-      alert('no uploaded');
-    }
-  });
-
-  $(".style-image").click(function() {
-    $(".style-image").removeClass("item-onclick");
-    $(this).addClass("item-onclick");
-    var selectedId = $(this).parent(".img-item").attr('id');
-    $("#selected-style").text("You choosed: " + selectedId);
-    selectedStyleImage = selectedId;
-  });
+	  $(".style-image").click(function() {
+	    $(".style-image").removeClass("item-onclick");
+	    $(this).addClass("item-onclick");
+	    var selectedId = $(this).parent(".img-item").attr('id');
+	    $("#selected-style").text("You choosed: " + selectedId);
+	    selectedStyleImage = selectedId;
+	  });
 
 
-  $(".to-top").click(function() {
-    $('html, body').animate({
-                      scrollTop: $("#page-top").offset().top
-                  }, 1000, "easeInOutExpo");
-    return false;
-  });
+	  $(".to-top").click(function() {
+	    $('html, body').animate({
+	                      scrollTop: $("#page-top").offset().top
+	                  }, 1000, "easeInOutExpo");
+	    return false;
+	  });
 
-  $(document).scroll(function() {
-    var scrollDistance = $(this).scrollTop();
-    if (scrollDistance > 100) {
-      $('#scroll-to-top').fadeIn();
-    } else {
-      $('#scroll-to-top').fadeOut();
-    }
-  });
+	  $(document).scroll(function() {
+	    var scrollDistance = $(this).scrollTop();
+	    if (scrollDistance > 100) {
+	      $('#scroll-to-top').fadeIn();
+	    } else {
+	      $('#scroll-to-top').fadeOut();
+	    }
+	  });
 
-}); 
+	}); 
 </script>
 {% endblock script %}

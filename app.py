@@ -5,7 +5,7 @@ from flask import send_from_directory, redirect, url_for
 import handdraw, base64, json, sys
 
 OUTPUT_FOLDER = './uploads/'
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = set(['png', 'jpg','jpeg' ,'gif', 'PNG','JPG', 'JPEG','GIF'])
 
 ## Initialize flask app.
 app = Flask(__name__)
