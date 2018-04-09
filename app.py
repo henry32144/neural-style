@@ -3,9 +3,13 @@ from werkzeug import secure_filename
 from flask import Flask, render_template, request, g , jsonify
 from flask import send_from_directory, redirect, url_for
 import handdraw, base64, json, sys
+import transfer
 
 OUTPUT_FOLDER = './uploads/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg','jpeg' ,'gif', 'PNG','JPG', 'JPEG','GIF'])
+STYLE_IMG_1_PATH = 'static/img/bamboo.jpg'
+STYLE_IMG_2_PATH = 'static/img/misty-mood.jpg'
+STYLE_IMG_3_PATH = 'static/img/wave.jpg'
 
 ## Initialize flask app.
 app = Flask(__name__)
@@ -25,9 +29,19 @@ def index():
 @app.route('/upload_image', methods=['POST'])
 def upload_file():
     file = request.files['file']
+    style = request.form['style']
+    print(style, file=sys.stdout)
+    STYLE_IMG_PATH = None
+    if style == 'img-bamboo':
+        STYLE_IMG_PATH = STYLE_IMG_1_PATH
+    elif style == 'img-misty-mood':
+        STYLE_IMG_PATH = STYLE_IMG_2_PATH
+    else:
+        STYLE_IMG_PATH = STYLE_IMG_3_PATH
+    #Form is ok
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        data = handdraw.imageprocess(file,filename)
+        data = transfer.gogo(file, STYLE_IMG_PATH, filename)
         print(type(data), file=sys.stdout)
         data = base64.b64encode(data).decode('UTF-8')
         json_data = json.dumps({'image':data,'test':'no'})

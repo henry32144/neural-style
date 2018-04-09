@@ -82,6 +82,9 @@
 			if($("#img-input").prop("files")[0] != undefined && selectedStyleImage != undefined) {
 			  var form = new FormData();
 			  form.append("file", $("#img-input").prop("files")[0]);
+        // NEED TO CHANGE IN FUTURE
+        form.append("style", selectedStyleImage);
+        alert(form);
 			  sendData(form);
 			  $(".result-section").removeClass("d-none");
 			  $('html, body').animate({
