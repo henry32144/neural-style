@@ -110,7 +110,7 @@ TF_19_WEIGHTS_PATH_NO_TOP = 'https://github.com/fchollet/deep-learning-models/re
 ##parser.add_argument('--min_improvement', default=0.0, type=float,
 ##                    help='Defines minimum improvement required to continue script')
 
-def gogo(base_image, syle_image_paths, r_filename):
+def transfer(base_image, syle_image_paths, r_filename):
     def str_to_bool(v):
         return v.lower() in ("true", "yes", "t", "1")
 
