@@ -67,7 +67,8 @@
         <div class="col-lg-12 mb-5">
           <HR>
           <h4 class="text-muted text-center mt-5">Wait a minute</h4>
-          <img id="img-output" class="img-fluid d-block mx-auto d-none" src="" alt="your image" />
+          <div class="loader text-center mt-5"></div>
+          <img id="img-output" class="img-fluid d-block mx-auto" src="" alt="your image" />
         </div>        
       </div>
     </section>
@@ -149,8 +150,9 @@
 
 	// Set image while the request is success
 	function setImage(data) {
-		$("#img-output").removeClass("d-none");
+		$(".loader").addClass("d-none");
 		$("#img-output").attr("src","data:image/jpeg;base64," + data["image"]);
+		$("#img-output").css("visibility", "visible");
 	}
 
 	// Load this part while the DOM is ready
