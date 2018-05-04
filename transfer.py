@@ -119,6 +119,7 @@ def transfer(base_image, syle_image_paths, r_filename):
     ##args = parser.parse_args()
     IMG_HEIGHT = 400
     IMG_WIDTH = 400
+    chosen_model = 'vgg16'
     # Need to pass image path
     base_image_path = base_image
     style_reference_image_paths = syle_image_paths
@@ -196,13 +197,6 @@ def transfer(base_image, syle_image_paths, r_filename):
     aspect_ratio = get_ratio(base_image_path)
 
     ##assert args.content_loss_type in [0, 1, 2], "Content Loss Type must be one of 0, 1 or 2"
-
-    ##    def get_ratio(base_image_path):
-    ##        img = imread(image_path, mode='RGB')
-    ##        img_WIDTH = img.shape[0]
-    ##        img_HEIGHT = img.shape[1]
-    ##        aspect_ratio = float(img_HEIGHT) / img_WIDTH
-    ##        return aspect_ratio
     
     # util function to open, resize and format pictures into appropriate tensors
     def preprocess_image(image_path, load_dims=False, read_mode="color"):
@@ -226,10 +220,6 @@ def transfer(base_image, syle_image_paths, r_filename):
             aspect_ratio = float(img_HEIGHT) / img_WIDTH
 
             img_width = IMG_WIDTH
-##            if maintain_aspect_ratio:
-##                img_height = int(img_width * aspect_ratio)
-##            else:
-##                img_height = 400
             img_height = IMG_HEIGHT
             
         img = imresize(img, (img_width, img_height)).astype('float32')
@@ -364,40 +354,38 @@ def transfer(base_image, syle_image_paths, r_filename):
     x = Convolution2D(256, (3, 3), activation='relu', name='conv3_1', padding='same')(x)
     x = Convolution2D(256, (3, 3), activation='relu', name='conv3_2', padding='same')(x)
     x = Convolution2D(256, (3, 3), activation='relu', name='conv3_3', padding='same')(x)
-    ##if args.model == "vgg19":
-    ##    x = Convolution2D(256, (3, 3), activation='relu', name='conv3_4', padding='same')(x)
+    if chosen_model == "vgg19":
+        x = Convolution2D(256, (3, 3), activation='relu', name='conv3_4', padding='same')(x)
     x = pooling_func(x)
 
     x = Convolution2D(512, (3, 3), activation='relu', name='conv4_1', padding='same')(x)
     x = Convolution2D(512, (3, 3), activation='relu', name='conv4_2', padding='same')(x)
     x = Convolution2D(512, (3, 3), activation='relu', name='conv4_3', padding='same')(x)
-    ##if args.model == "vgg19":
-    ##    x = Convolution2D(512, (3, 3), activation='relu', name='conv4_4', padding='same')(x)
+    if chosen_model == "vgg19":
+        x = Convolution2D(512, (3, 3), activation='relu', name='conv4_4', padding='same')(x)
     x = pooling_func(x)
 
     x = Convolution2D(512, (3, 3), activation='relu', name='conv5_1', padding='same')(x)
     x = Convolution2D(512, (3, 3), activation='relu', name='conv5_2', padding='same')(x)
     x = Convolution2D(512, (3, 3), activation='relu', name='conv5_3', padding='same')(x)
-    ##if args.model == "vgg19":
-    ##    x = Convolution2D(512, (3, 3), activation='relu', name='conv5_4', padding='same')(x)
+    if chosen_model == "vgg19":
+        x = Convolution2D(512, (3, 3), activation='relu', name='conv5_4', padding='same')(x)
     x = pooling_func(x)
 
     model = Model(ip, x)
 
     if K.image_dim_ordering() == "th":
-    ##    if args.model == "vgg19":
-    ##        weights = get_file('vgg19_weights_th_dim_ordering_th_kernels_notop.h5', TH_19_WEIGHTS_PATH_NO_TOP, cache_subdir='models')
-    ##    else:
-    ##        weights = get_file('vgg16_weights_th_dim_ordering_th_kernels_notop.h5', THEANO_WEIGHTS_PATH_NO_TOP, cache_subdir='models')
-        weights = get_file('vgg16_weights_th_dim_ordering_th_kernels_notop.h5', THEANO_WEIGHTS_PATH_NO_TOP, cache_subdir='models')
-        
+        if chosen_model == "vgg19":
+            weights = get_file('vgg19_weights_th_dim_ordering_th_kernels_notop.h5', TH_19_WEIGHTS_PATH_NO_TOP, cache_subdir='models')
+        else:
+            weights = get_file('vgg16_weights_th_dim_ordering_th_kernels_notop.h5', THEANO_WEIGHTS_PATH_NO_TOP, cache_subdir='models')
     else:
-    ##    if args.model == "vgg19":
-    ##        weights = get_file('vgg19_weights_tf_dim_ordering_tf_kernels_notop.h5', TF_19_WEIGHTS_PATH_NO_TOP, cache_subdir='models')
-    ##    else:
-    ##        weights = get_file('vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5', TF_WEIGHTS_PATH_NO_TOP, cache_subdir='models')
-        weights = get_file('vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5', TF_WEIGHTS_PATH_NO_TOP, cache_subdir='models')
+        if chosen_model == "vgg19":
+            weights = get_file('vgg19_weights_tf_dim_ordering_tf_kernels_notop.h5', TF_19_WEIGHTS_PATH_NO_TOP, cache_subdir='models')
+        else:
+            weights = get_file('vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5', TF_WEIGHTS_PATH_NO_TOP, cache_subdir='models')
 
+    print(chosen_model)
     model.load_weights(weights)
 
     if K.backend() == 'tensorflow' and K.image_dim_ordering() == "th":
@@ -495,12 +483,12 @@ def transfer(base_image, syle_image_paths, r_filename):
             b = K.square(x[:, :img_width - 1, :img_height - 1, :] - x[:, :img_width - 1, 1:, :])
         return K.sum(K.pow(a + b, 1.25))
 
-    ##if args.model == "vgg19":
-    ##    feature_layers = ['conv1_1', 'conv1_2', 'conv2_1', 'conv2_2', 'conv3_1', 'conv3_2', 'conv3_3', 'conv3_4',
-    ##                      'conv4_1', 'conv4_2', 'conv4_3', 'conv4_4', 'conv5_1', 'conv5_2', 'conv5_3', 'conv5_4']
-    ##else:
-    ##    feature_layers = ['conv1_1', 'conv1_2', 'conv2_1', 'conv2_2', 'conv3_1', 'conv3_2', 'conv3_3',
-    ##                      'conv4_1', 'conv4_2', 'conv4_3', 'conv5_1', 'conv5_2', 'conv5_3']
+    if chosen_model == "vgg19":
+        feature_layers = ['conv1_1', 'conv1_2', 'conv2_1', 'conv2_2', 'conv3_1', 'conv3_2', 'conv3_3', 'conv3_4',
+                          'conv4_1', 'conv4_2', 'conv4_3', 'conv4_4', 'conv5_1', 'conv5_2', 'conv5_3', 'conv5_4']
+    else:
+        feature_layers = ['conv1_1', 'conv1_2', 'conv2_1', 'conv2_2', 'conv3_1', 'conv3_2', 'conv3_3',
+                          'conv4_1', 'conv4_2', 'conv4_3', 'conv5_1', 'conv5_2', 'conv5_3']
 
     feature_layers = ['conv1_1', 'conv1_2', 'conv2_1', 'conv2_2', 'conv3_1', 'conv3_2', 'conv3_3',
                           'conv4_1', 'conv4_2', 'conv4_3', 'conv5_1', 'conv5_2', 'conv5_3']

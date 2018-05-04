@@ -2,3 +2,6 @@ __pycache__/demo_query.cpython-36.pyc
 __pycache__/database.cpython-36.pyc
 __pycache__
 *.pyc
+.ipynb_checkpoints/research-checkpoint.ipynb
+.ipynb_checkpoints/*
+.ipynb_checkpoints

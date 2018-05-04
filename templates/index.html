@@ -67,7 +67,7 @@
         <div class="col-lg-12 mb-5">
           <HR>
           <h4 class="text-muted text-center mt-5">Wait a minute</h4>
-          <div class="loader text-center mt-5"></div>
+          <div class="loader text-center mt-5 mx-auto"></div>
           <img id="img-output" class="img-fluid d-block mx-auto" src="" alt="your image" />
         </div>        
       </div>
@@ -97,6 +97,7 @@
 			sendData(form);
 			// Show the result section
 			$(".result-section").removeClass("d-none");
+			$(".loader").toggleClass("d-none", false);
 			// Scroll to the result section
 			$('html, body').animate({
 			                scrollTop: $(".result-section").offset().top
@@ -150,9 +151,14 @@
 
 	// Set image while the request is success
 	function setImage(data) {
-		$(".loader").addClass("d-none");
+		$(".loader").toggleClass("d-none", true);
 		$("#img-output").attr("src","data:image/jpeg;base64," + data["image"]);
 		$("#img-output").css("visibility", "visible");
+	}
+
+	function toggleOutputImage() {
+		$("#img-output").toggleClass("d-block");
+		$("#img-output").toggleClass("d-none");
 	}
 
 	// Load this part while the DOM is ready
@@ -164,6 +170,7 @@
 		// Clean the former selected image
 		$("#img-input").click(function() {
 			$("#img-preview").css("visibility", "hidden");
+			$("#img-input").prop("value", "");
 			$("#img-output").attr("src","");
 		});
 
@@ -185,6 +192,13 @@
 	    	return false;
 	  	});
 
+	  	$(".to-top").click(function() {
+	    	$('html, body').animate({
+	            scrollTop: $("#page-top").offset().top
+	        }, 1000, 
+	        "easeInOutExpo");
+	    	return false;
+	  	});
 	  	// Display the to top button
 	  	$(document).scroll(function() {
 	    	var scrollDistance = $(this).scrollTop();
