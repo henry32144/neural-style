@@ -9,28 +9,77 @@
 
 <!-- Subtitle -->
 {% block secondtitle %}
-<h4 class="mt-3 text-muted">Choose an image</h4>
+<h4 class="mt-3 text-muted">Choose a style image</h4>
 {% endblock secondtitle %}
 
 <!-- Page Content -->
 {% block main %}
-	 <main class="container mt-5">
+	 <main class="container mt-3">
 	 	<!-- Style image section -->
-      <section class="row style-image-section">
-          <div class="col-lg-4">
-            <div id="img-bamboo" class="img-item">
-              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/bamboo.jpg') }}" alt="Bamboo">
-            </div>
-          </div>
-          <div class="col-lg-4">
-            <div id="img-misty-mood" class="img-item">
-              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/misty-mood.jpg') }}" alt="Mistymood">
-            </div>
-          </div>
-          <div class="col-lg-4">
-            <div id="img-wave" class="img-item">
-              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/wave.jpg') }}" alt="Wave">
-            </div>
+      <section class="style-image-section">
+      	  <div class="card card-default">
+      	  	<div class="card-header">Styles</div>
+      	  	<div class="container-fluid card-body" style="max-height: 450px;overflow-y: scroll;">
+      	  		<div class="row mt-2">
+		          <div class="col-lg-4">
+		            <div id="mirror" class="img-item">
+		              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/mirror.jpg') }}" alt="Mirror">
+		            </div>
+		          </div>
+		          <div class="col-lg-4">
+		            <div id="udnie" class="img-item">
+		              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/udnie.jpg') }}" alt="Udnie">
+		            </div>
+		          </div>
+		          <div class="col-lg-4">
+		            <div id="la_muse" class="img-item">
+		              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/la_muse.jpg') }}" alt="La_muse">
+		            </div>
+		          </div>
+	            </div>
+      	  		<div class="row mt-2">
+		          <div class="col-lg-4">
+		            <div id="chinese" class="img-item">
+		              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/chinese.jpg') }}" alt="Chinese">
+		            </div>
+		          </div>
+		          <div class="col-lg-4">
+		            <div id="mountain_water" class="img-item">
+		              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/mountain_water.jpg') }}" alt="MountainWater">
+		            </div>
+		          </div>
+		          <div class="col-lg-4">
+		            <div id="zhangdaqian" class="img-item">
+		              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/zhangdaqian.jpg') }}" alt="Zhangdaqian">
+		            </div>
+		          </div>    
+		        </div>
+		        
+	            <div class="row mt-2">
+		          <div class="col-lg-4">
+		            <div id="des_glaneuses" class="img-item">
+		              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/des_glaneuses.jpg') }}" alt="Des_glaneuses">
+		            </div>
+		          </div>
+		          <div class="col-lg-4">
+		            <div id="wave_crop" class="img-item">
+		              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/wave_crop.jpg') }}" alt="Wave_crop">
+		            </div>
+		          </div>
+		          <div class="col-lg-4">
+		            <div id="starry_night" class="img-item">
+		              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/starry_night.jpg') }}" alt="Starry_night">
+		            </div>
+		          </div>
+	            </div>
+	            <div class="row mt-2">
+		          <div class="col-lg-4">
+		            <div id="monalisa" class="img-item">
+		              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/monalisa.jpg') }}" alt="Monalisa">
+		            </div>
+		          </div>
+	            </div>
+	        </div>
           </div>
         </section>
         <div class="row mt-4">
@@ -51,7 +100,7 @@
               <input name="file" class="form-control" type="file" id="img-input" accept="image/*">
             </div>
             <div class="col-lg-6">
-              <img id="img-preview" class="img-fluid" src="" alt="your image" />
+              <img id="img-preview" class="img-fluid mx-auto" src="" alt="your image" />
             </div>
           </div>
           <div class="d-flex justify-content-center">
@@ -66,9 +115,9 @@
       <div class="row">
         <div class="col-lg-12 mb-5">
           <HR>
-          <h4 class="text-muted text-center mt-5">Wait a minute</h4>
+          <h4 class="text-muted text-center mt-5" id="result-state">Wait a minute</h4>
           <div class="loader text-center mt-5 mx-auto"></div>
-          <img id="img-output" class="img-fluid d-block mx-auto" src="" alt="your image" />
+          <img id="img-output" class="img-fluid d-none mx-auto" src="" alt="your image" />
         </div>        
       </div>
     </section>
@@ -96,8 +145,10 @@
         	alert(form);
 			sendData(form);
 			// Show the result section
-			$(".result-section").removeClass("d-none");
+			$(".result-section").toggleClass("d-none", false);
+			$("#result-state").text("Wait a minute!");
 			$(".loader").toggleClass("d-none", false);
+			toggleOutputImage(false);
 			// Scroll to the result section
 			$('html, body').animate({
 			                scrollTop: $(".result-section").offset().top
@@ -135,10 +186,14 @@
             cache: false,
             headers: { "cache-control": "no-cache" },
 		    success: function(response) {
-		        console.log('success');
+		        console.log('json return successful');
 		        console.log(typeof(response));
-		        alert('success');
-		        setImage(JSON.parse(response));	              
+		        var json_data = JSON.parse(response);
+		        if (json_data["error"]) { // has error
+		        	displayError(json_data["error"]);
+		    	} else { // success
+		    		setImage(JSON.parse(response));
+		    	}
 		    },
 		    error: function(error) {
 		        console.log("fail");
@@ -150,15 +205,31 @@
 	};
 
 	// Set image while the request is success
+	function displayError(data) {
+		$(".loader").toggleClass("d-none", true);
+		$("#result-state").text(data);
+	}
+
+	// Set image while the request is success
 	function setImage(data) {
+		$("#result-state").text("Success!");
 		$(".loader").toggleClass("d-none", true);
 		$("#img-output").attr("src","data:image/jpeg;base64," + data["image"]);
 		$("#img-output").css("visibility", "visible");
+		toggleOutputImage(true);
 	}
 
-	function toggleOutputImage() {
-		$("#img-output").toggleClass("d-block");
-		$("#img-output").toggleClass("d-none");
+	// Set image output display or not
+	function toggleOutputImage(turnon) {
+		if(turnon) {
+			$("#img-output").toggleClass("d-block", true);
+			$("#img-output").toggleClass("d-none", false);
+		}
+		else {
+			$("#img-output").toggleClass("d-block", false);
+			$("#img-output").toggleClass("d-none", true);
+		}
+
 	}
 
 	// Load this part while the DOM is ready
@@ -172,6 +243,8 @@
 			$("#img-preview").css("visibility", "hidden");
 			$("#img-input").prop("value", "");
 			$("#img-output").attr("src","");
+			toggleOutputImage(false);
+			$(".result-section").toggleClass("d-none", true);
 		});
 
 		// Listen to the style image selected event

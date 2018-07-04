@@ -18,6 +18,9 @@ from keras.models import Model
 from keras.layers import Input
 from keras.layers.convolutional import Convolution2D, AveragePooling2D, MaxPooling2D
 from keras import backend as K
+from keras.preprocessing import image
+from keras.applications.vgg16 import preprocess_input
+from keras.applications.vgg16 import VGG16
 from keras.utils.data_utils import get_file
 from keras.utils.layer_utils import convert_all_kernels_in_model
 from keras.backend.tensorflow_backend import set_session
@@ -26,6 +29,7 @@ Neural Style Transfer with Keras 2.0.5
 
 Based on:
 https://github.com/fchollet/keras/blob/master/examples/neural_style_transfer.py
+https://github.com/titu1994/Neural-Style-Transfer
 
 Contains few improvements suggested in the paper Improving the Neural Algorithm of Artistic Style
 (http://arxiv.org/abs/1605.04603).
@@ -39,354 +43,103 @@ TF_WEIGHTS_PATH_NO_TOP = 'https://github.com/fchollet/deep-learning-models/relea
 TH_19_WEIGHTS_PATH_NO_TOP = 'https://github.com/fchollet/deep-learning-models/releases/download/v0.1/vgg19_weights_th_dim_ordering_th_kernels_notop.h5'
 TF_19_WEIGHTS_PATH_NO_TOP = 'https://github.com/fchollet/deep-learning-models/releases/download/v0.1/vgg19_weights_tf_dim_ordering_tf_kernels_notop.h5'
 
-##config = tf.ConfigProto()
-##config.gpu_options.per_process_gpu_memory_fraction = 0.65
-##config.gpu_options.visible_device_list = "0"
-##set_session(tf.Session(config=config))
-##parser = argparse.ArgumentParser(description='Neural style transfer with Keras.')
-##parser.add_argument('base_image_path', metavar='base', type=str,
-##                    help='Path to the image to transform.')
-##
-##parser.add_argument('syle_image_paths', metavar='ref', nargs='+', type=str,
-##                    help='Path to the style reference image.')
-##
-##parser.add_argument('result_prefix', metavar='res_prefix', type=str,
-##                    help='Prefix for the saved results.')
-##
-##parser.add_argument("--style_masks", type=str, default=None, nargs='+',
-##                    help='Masks for style images')
-##
-##parser.add_argument("--content_mask", type=str, default=None,
-##                    help='Masks for the content image')
-##
-##parser.add_argument("--color_mask", type=str, default=None,
-##                    help='Mask for color preservation')
-##
-##parser.add_argument("--image_size", dest="img_size", default=400, type=int,
-##                    help='Minimum image size')
-##
-##parser.add_argument("--content_weight", dest="content_weight", default=0.025, type=float,
-##                    help="Weight of content")
-##
-##parser.add_argument("--style_weight", dest="style_weight", nargs='+', default=[1], type=float,
-##                    help="Weight of style, can be multiple for multiple styles")
-##
-##parser.add_argument("--style_scale", dest="style_scale", default=1.0, type=float,
-##                    help="Scale the weighing of the style")
-##
-##parser.add_argument("--total_variation_weight", dest="tv_weight", default=8.5e-5, type=float,
-##                    help="Total Variation weight")
-##
-##parser.add_argument("--num_iter", dest="num_iter", default=10, type=int,
-##                    help="Number of iterations")
-##
-##parser.add_argument("--model", default="vgg16", type=str,
-##                    help="Choices are 'vgg16' and 'vgg19'")
-##
-##parser.add_argument("--content_loss_type", default=0, type=int,
-##                    help='Can be one of 0, 1 or 2. Readme contains the required information of each mode.')
-##
-##parser.add_argument("--rescale_image", dest="rescale_image", default="False", type=str,
-##                    help="Rescale image after execution to original dimentions")
-##
-##parser.add_argument("--rescale_method", dest="rescale_method", default="bilinear", type=str,
-##                    help="Rescale image algorithm")
-##
-##parser.add_argument("--maintain_aspect_ratio", dest="maintain_aspect_ratio", default="True", type=str,
-##                    help="Maintain aspect ratio of loaded images")
-##
-##parser.add_argument("--content_layer", dest="content_layer", default="conv5_2", type=str,
-##                    help="Content layer used for content loss.")
-##
-##parser.add_argument("--init_image", dest="init_image", default="content", type=str,
-##                    help="Initial image used to generate the final image. Options are 'content', 'noise', or 'gray'")
-##
-##parser.add_argument("--pool_type", dest="pool", default="max", type=str,
-##                    help='Pooling type. Can be "ave" for average pooling or "max" for max pooling')
-##
-##parser.add_argument('--preserve_color', dest='color', default="False", type=str,
-##                    help='Preserve original color in image')
-##
-##parser.add_argument('--min_improvement', default=0.0, type=float,
-##                    help='Defines minimum improvement required to continue script')
 
-def transfer(base_image, syle_image_paths, r_filename):
+def transfer(base_image, syle_image_path):
     def str_to_bool(v):
         return v.lower() in ("true", "yes", "t", "1")
 
     ''' Arguments '''
-
     ##args = parser.parse_args()
     IMG_HEIGHT = 400
     IMG_WIDTH = 400
     chosen_model = 'vgg16'
+
     # Need to pass image path
     base_image_path = base_image
-    style_reference_image_paths = syle_image_paths
-    result_prefix = 'images/result/' + r_filename
+    style_image_path = syle_image_path
 
-    style_image_paths = [style_reference_image_paths]
-
-    style_masks_present = False
-    content_mask_path = False
-
-    
-    ##style_masks_present = args.style_masks is not None
-    ##mask_paths = []
-    ##
-    ##if style_masks_present:
-    ##    for mask_path in args.style_masks:
-    ##        mask_paths.append(mask_path)
-    ##
-    ##if style_masks_present:
-    ##    assert len(style_image_paths) == len(mask_paths), "Wrong number of style masks provided.\n" \
-    ##                                                      "Number of style images = %d, \n" \
-    ##                                                      "Number of style mask paths = %d." % \
-    ##                                                      (len(style_image_paths), len(style_masks_present))
-    ##
-    ##content_mask_present = args.content_mask is not None
-    ##content_mask_path = args.content_mask
-    ##
-    ##
-    ##color_mask_present = args.color_mask is not None
-
-    rescale_image = False
-    maintain_aspect_ratio = True
-    preserve_color = False
 
     # these are the weights of the different loss components
-    content_weight = 0.025
+    content_weight = 0.1
+    style_weight = 1.0
     total_variation_weight = 8.5e-5
 
-    style_weights = []
-    arg_style_weight = [1]
-
-    if len(style_image_paths) != len(arg_style_weight):
-        print("Mismatch in number of style images provided and number of style weights provided. \n"
-              "Found %d style images and %d style weights. \n"
-              "Equally distributing weights to all other styles." % (len(style_image_paths), len(arg_style_weight)))
-
-        weight_sum = sum(arg_style_weight) * 1.0
-        count = len(style_image_paths)
-
-        for i in range(len(style_image_paths)):
-            style_weights.append(weight_sum / count)
-    else:
-        for style_weight in arg_style_weight:
-            style_weights.append(style_weight * 1.0)
-
-    # Decide pooling function
-    pooltype = str('max').lower()
-    assert pooltype in ["ave", "max"], 'Pooling argument is wrong. Needs to be either "ave" or "max".'
-
-    pooltype = 1 if pooltype == "ave" else 0
-
-    read_mode = "gray" if 'content' == "gray" else "color"
-
-    # dimensions of the generated picture.
+    # 取得輸入圖片的長寬比例
     def get_ratio(image):
         img = np.asarray(Image.open(image).convert('RGB')).astype('float')
         img_WIDTH = img.shape[0]
         img_HEIGHT = img.shape[1]
         aspect_ratio = float(img_HEIGHT) / img_WIDTH
         return aspect_ratio
-    
-    img_width = IMG_HEIGHT
 
-    img_WIDTH = IMG_WIDTH
-    aspect_ratio = get_ratio(base_image_path)
+    # 預處理輸入的圖片
+    def preprocess_image(image_path):
+        mode = "RGB"
+        img = imread(image_path, mode=mode)
 
-    ##assert args.content_loss_type in [0, 1, 2], "Content Loss Type must be one of 0, 1 or 2"
-    
-    # util function to open, resize and format pictures into appropriate tensors
-    def preprocess_image(image_path, load_dims=False, read_mode="color"):
-        global img_width, img_height, img_WIDTH, img_HEIGHT, aspect_ratio
+        img = imresize(img,(IMG_WIDTH, IMG_HEIGHT)).astype('float32')
 
-        mode = "RGB" if read_mode == "color" else "L"
-        img = imread(image_path, mode=mode)  # Prevents crashes due to PNG images (ARGB)
-
-        if mode == "L":
-            # Expand the 1 channel grayscale to 3 channel grayscale image
-            temp = np.zeros(img.shape + (3,), dtype=np.uint8)
-            temp[:, :, 0] = img
-            temp[:, :, 1] = img.copy()
-            temp[:, :, 2] = img.copy()
-
-            img = temp
-
-        if load_dims:
-            img_WIDTH = img.shape[0]
-            img_HEIGHT = img.shape[1]
-            aspect_ratio = float(img_HEIGHT) / img_WIDTH
-
-            img_width = IMG_WIDTH
-            img_height = IMG_HEIGHT
-            
-        img = imresize(img, (img_width, img_height)).astype('float32')
 
         # RGB -> BGR
-        img = img[:, :, ::-1]
-
-        img[:, :, 0] -= 103.939
-        img[:, :, 1] -= 116.779
-        img[:, :, 2] -= 123.68
-
+        img = preprocess_input(img)
+        
+        # 檢查當前keras使用的後端引擎，如果是Theano的話需要轉換圖片陣列格式
+        # Theano 格式 : (channels, rows, cols). ex: In our case - (3, 400, 400) 
+        # Tensorflow 格式 : (rows, cols, channels). ex: In our case - (400, 400, 3)
         if K.image_dim_ordering() == "th":
             img = img.transpose((2, 0, 1)).astype('float32')
 
+        # 將圖片陣列多拓展一個存放圖片數量的維度，ex: 原本是(400, 400, 3), 變成(1, 400, 400, 3)
         img = np.expand_dims(img, axis=0)
+        print(img.shape)
         return img
 
-
-    # util function to convert a tensor into a valid image
+    # 後處理要輸出的圖片，將處理完的矩陣轉回去照片的格式
     def deprocess_image(x):
         if K.image_dim_ordering() == "th":
-            x = x.reshape((3, img_width, img_height))
+            x = x.reshape((3, IMG_WIDTH, IMG_HEIGHT))
             x = x.transpose((1, 2, 0))
         else:
-            x = x.reshape((img_width, img_height, 3))
+            x = x.reshape((IMG_WIDTH, IMG_HEIGHT, 3))
 
         x[:, :, 0] += 103.939
         x[:, :, 1] += 116.779
         x[:, :, 2] += 123.68
-
+        
         # BGR -> RGB
         x = x[:, :, ::-1]
 
+        # 將陣列的值的範圍縮回 0~255，因為處理的結果有可能出現超過這個範圍的數字
         x = np.clip(x, 0, 255).astype('uint8')
         return x
 
 
-    # util function to preserve image color
-    def original_color_transform(content, generated, mask=None):
-        generated = fromimage(toimage(generated, mode='RGB'), mode='YCbCr')  # Convert to YCbCr color space
+    # 建立存放經過預處理後的照片的變數
+    base_image = K.variable(preprocess_image(base_image_path))
+    style_image = K.variable(preprocess_image(style_image_path))
 
-        if mask is None:
-            generated[:, :, 1:] = content[:, :, 1:]  # Generated CbCr = Content CbCr
-        else:
-            width, height, channels = generated.shape
-
-            for i in range(width):
-                for j in range(height):
-                    if mask[i, j] == 1:
-                        generated[i, j, 1:] = content[i, j, 1:]
-
-        generated = fromimage(toimage(generated, mode='YCbCr'), mode='RGB')  # Convert to RGB color space
-        return generated
-
-
-    def load_mask(mask_path, shape, return_mask_img=False):
-        if K.image_dim_ordering() == "th":
-            _, channels, width, height = shape
-        else:
-            _, width, height, channels = shape
-
-        mask = imread(mask_path, mode="L") # Grayscale mask load
-        mask = imresize(mask, (width, height)).astype('float32')
-
-        # Perform binarization of mask
-        mask[mask <= 127] = 0
-        mask[mask > 128] = 255
-
-        max = np.amax(mask)
-        mask /= max
-
-        if return_mask_img: return mask
-
-        mask_shape = shape[1:]
-
-        mask_tensor = np.empty(mask_shape)
-
-        for i in range(channels):
-            if K.image_dim_ordering() == "th":
-                mask_tensor[i, :, :] = mask
-            else:
-                mask_tensor[:, :, i] = mask
-
-        return mask_tensor
-
-
-    def pooling_func(x):
-        if pooltype == 1:
-            return AveragePooling2D((2, 2), strides=(2, 2))(x)
-        else:
-            return MaxPooling2D((2, 2), strides=(2, 2))(x)
-
-
-    # get tensor representations of our images
-    base_image = K.variable(preprocess_image(base_image_path, True, read_mode=read_mode))
-
-    style_reference_images = []
-    style_reference_images.append(K.variable(preprocess_image(style_image_paths[0])))
-
-    # this will contain our generated image
     if K.image_dim_ordering() == 'th':
-        combination_image = K.placeholder((1, 3, img_width, img_height))
+        combination_image = K.placeholder((1, 3, IMG_WIDTH, IMG_HEIGHT))
     else:
         combination_image = K.placeholder((1, IMG_WIDTH, IMG_HEIGHT, 3))
 
-    image_tensors = [base_image]
-    image_tensors.append(style_reference_images[0])
-    image_tensors.append(combination_image)
-    print(len(image_tensors))
+    image_tensors = [base_image, style_image, combination_image]
+    # nb = number
     nb_tensors = len(image_tensors)
-    nb_style_images = nb_tensors - 2 # Content and Output image not considered
+    nb_style_images = 1 
 
-    # combine the various images into a single Keras tensor
+    # 將存放照片的陣列壓成一串Tensor(張量)，用於當作模型的輸入
     input_tensor = K.concatenate(image_tensors, axis=0)
 
     if K.image_dim_ordering() == "th":
-        shape = (None, 3, img_width, img_height)
+        input_shape = (3, IMG_WIDTH, IMG_HEIGHT,None)
     else:
-        shape = (None, img_width, img_height, 3)
+        input_shape = (None, IMG_WIDTH, IMG_HEIGHT, 3)
 
-    ip = Input(tensor=input_tensor, batch_shape=shape)
-
-    # build the VGG16 network with our 3 images as input
-    x = Convolution2D(64, (3, 3), activation='relu', name='conv1_1', padding='same')(ip)
-    x = Convolution2D(64, (3, 3), activation='relu', name='conv1_2', padding='same')(x)
-    x = pooling_func(x)
-
-    x = Convolution2D(128, (3, 3), activation='relu', name='conv2_1', padding='same')(x)
-    x = Convolution2D(128, (3, 3), activation='relu', name='conv2_2', padding='same')(x)
-    x = pooling_func(x)
-
-    x = Convolution2D(256, (3, 3), activation='relu', name='conv3_1', padding='same')(x)
-    x = Convolution2D(256, (3, 3), activation='relu', name='conv3_2', padding='same')(x)
-    x = Convolution2D(256, (3, 3), activation='relu', name='conv3_3', padding='same')(x)
-    if chosen_model == "vgg19":
-        x = Convolution2D(256, (3, 3), activation='relu', name='conv3_4', padding='same')(x)
-    x = pooling_func(x)
-
-    x = Convolution2D(512, (3, 3), activation='relu', name='conv4_1', padding='same')(x)
-    x = Convolution2D(512, (3, 3), activation='relu', name='conv4_2', padding='same')(x)
-    x = Convolution2D(512, (3, 3), activation='relu', name='conv4_3', padding='same')(x)
-    if chosen_model == "vgg19":
-        x = Convolution2D(512, (3, 3), activation='relu', name='conv4_4', padding='same')(x)
-    x = pooling_func(x)
-
-    x = Convolution2D(512, (3, 3), activation='relu', name='conv5_1', padding='same')(x)
-    x = Convolution2D(512, (3, 3), activation='relu', name='conv5_2', padding='same')(x)
-    x = Convolution2D(512, (3, 3), activation='relu', name='conv5_3', padding='same')(x)
-    if chosen_model == "vgg19":
-        x = Convolution2D(512, (3, 3), activation='relu', name='conv5_4', padding='same')(x)
-    x = pooling_func(x)
-
-    model = Model(ip, x)
-
-    if K.image_dim_ordering() == "th":
-        if chosen_model == "vgg19":
-            weights = get_file('vgg19_weights_th_dim_ordering_th_kernels_notop.h5', TH_19_WEIGHTS_PATH_NO_TOP, cache_subdir='models')
-        else:
-            weights = get_file('vgg16_weights_th_dim_ordering_th_kernels_notop.h5', THEANO_WEIGHTS_PATH_NO_TOP, cache_subdir='models')
-    else:
-        if chosen_model == "vgg19":
-            weights = get_file('vgg19_weights_tf_dim_ordering_tf_kernels_notop.h5', TF_19_WEIGHTS_PATH_NO_TOP, cache_subdir='models')
-        else:
-            weights = get_file('vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5', TF_WEIGHTS_PATH_NO_TOP, cache_subdir='models')
+    #load model
+    model = VGG16(include_top=False,weights='imagenet', input_tensor=input_tensor)
 
     print(chosen_model)
-    model.load_weights(weights)
 
     if K.backend() == 'tensorflow' and K.image_dim_ordering() == "th":
         warnings.warn('You are using the TensorFlow backend, yet you '
@@ -403,139 +156,99 @@ def transfer(base_image, syle_image_paths, r_filename):
 
     # get the symbolic outputs of each "key" layer (we gave them unique names).
     outputs_dict = dict([(layer.name, layer.output) for layer in model.layers])
-    shape_dict = dict([(layer.name, layer.output_shape) for layer in model.layers])
 
-    # compute the neural style loss
-    # first we need to define 4 util functions
-
-    # Improvement 1
-    # the gram matrix of an image tensor (feature-wise outer product) using shifted activations
     def gram_matrix(x):
+        
+        # ndim: 取得張量的階數
         assert K.ndim(x) == 3
         if K.image_dim_ordering() == "th":
             features = K.batch_flatten(x)
         else:
+            # batch_flatten: 將一個n階張量轉變為2階張量，其第一維度保留不變
+            # permute_dimensions: 按照给定的模式重排一个張量的軸
             features = K.batch_flatten(K.permute_dimensions(x, (2, 0, 1)))
-        gram = K.dot(features - 1, K.transpose(features - 1))
+
+        # dot: 矩陣乘法
+        # transpose: 矩陣轉置
+        gram = K.dot(features, K.transpose(features))
         return gram
 
-
-    # the "style loss" is designed to maintain
-    # the style of the reference image in the generated image.
-    # It is based on the gram matrices (which capture style) of
-    # feature maps from the style reference image
-    # and from the generated image
-    def style_loss(style, combination, mask_path=None, nb_channels=None):
+    def style_loss(style, combination):
         assert K.ndim(style) == 3
         assert K.ndim(combination) == 3
-
-##        if content_mask_path is not None:
-##            content_mask = K.variable(load_mask(content_mask_path, nb_channels))
-##            combination = combination * K.stop_gradient(content_mask)
-##            del content_mask
-##
-##        if mask_path is not None:
-##            style_mask = K.variable(load_mask(mask_path, nb_channels))
-##            style = style * K.stop_gradient(style_mask)
-##            if content_mask_path is None:
-##                combination = combination * K.stop_gradient(style_mask)
-##            del style_mask
 
         S = gram_matrix(style)
         C = gram_matrix(combination)
         channels = 3
-        size = img_width * img_height
+        size = IMG_WIDTH * IMG_HEIGHT
         return K.sum(K.square(S - C)) / (4. * (channels ** 2) * (size ** 2))
 
 
-    # an auxiliary loss function
-    # designed to maintain the "content" of the
-    # base image in the generated image
     def content_loss(base, combination):
-        channel_dim = 0 if K.image_dim_ordering() == "th" else -1
 
-        try:
-            channels = K.int_shape(base)[channel_dim]
-        except TypeError:
-            channels = K.shape(base)[channel_dim]
-        size = img_width * img_height
-
-    ##    if args.content_loss_type == 1:
-    ##        multiplier = 1. / (2. * (channels ** 0.5) * (size ** 0.5))
-    ##    elif args.content_loss_type == 2:
-    ##        multiplier = 1. / (channels * size)
-    ##    else:
-    ##        multiplier = 1.
-        
-        multiplier = 1.
-        return multiplier * K.sum(K.square(combination - base))
+        return 0.5 * K.sum(K.square(content_weight * (combination - base)))
 
 
-    # the 3rd loss function, total variation loss,
-    # designed to keep the generated image locally coherent
+    # 這個loss幫助圖片的細節有連貫性
+    # 詳細: https://blog.csdn.net/afgh2587849/article/details/6401181
     def total_variation_loss(x):
         assert K.ndim(x) == 4
+        # square: 平方
         if K.image_dim_ordering() == 'th':
-            a = K.square(x[:, :, :img_width - 1, :img_height - 1] - x[:, :, 1:, :img_height - 1])
-            b = K.square(x[:, :, :img_width - 1, :img_height - 1] - x[:, :, :img_width - 1, 1:])
+            a = K.square(x[:, :, :IMG_WIDTH - 1, :IMG_HEIGHT - 1] - x[:, :, 1:, :IMG_HEIGHT - 1])
+            b = K.square(x[:, :, :IMG_WIDTH - 1, :IMG_HEIGHT - 1] - x[:, :, :IMG_WIDTH - 1, 1:])
         else:
-            a = K.square(x[:, :img_width - 1, :img_height - 1, :] - x[:, 1:, :img_height - 1, :])
-            b = K.square(x[:, :img_width - 1, :img_height - 1, :] - x[:, :img_width - 1, 1:, :])
+            a = K.square(x[:, :IMG_WIDTH - 1, :IMG_HEIGHT - 1, :] - x[:, 1:, :IMG_HEIGHT - 1, :])
+            b = K.square(x[:, :IMG_WIDTH - 1, :IMG_HEIGHT - 1, :] - x[:, :IMG_WIDTH - 1, 1:, :])
+        # sum: 總和
+        # pow: 乘上次方
         return K.sum(K.pow(a + b, 1.25))
 
-    if chosen_model == "vgg19":
-        feature_layers = ['conv1_1', 'conv1_2', 'conv2_1', 'conv2_2', 'conv3_1', 'conv3_2', 'conv3_3', 'conv3_4',
-                          'conv4_1', 'conv4_2', 'conv4_3', 'conv4_4', 'conv5_1', 'conv5_2', 'conv5_3', 'conv5_4']
-    else:
-        feature_layers = ['conv1_1', 'conv1_2', 'conv2_1', 'conv2_2', 'conv3_1', 'conv3_2', 'conv3_3',
-                          'conv4_1', 'conv4_2', 'conv4_3', 'conv5_1', 'conv5_2', 'conv5_3']
+    feature_layers = ['block1_conv1', 'block1_conv2', 'block1_pool', 'block2_conv1', 'block2_conv2', 'block2_pool',
+                     'block3_conv1', 'block3_conv2', 'block3_conv3', 'block3_pool', 'block4_conv1', 'block4_conv2', 
+                     'block4_conv3','block4_pool','block5_conv1', 'block5_conv2', 'block5_conv3']
 
-    feature_layers = ['conv1_1', 'conv1_2', 'conv2_1', 'conv2_2', 'conv3_1', 'conv3_2', 'conv3_3',
-                          'conv4_1', 'conv4_2', 'conv4_3', 'conv5_1', 'conv5_2', 'conv5_3']
-
-    # combine these loss functions into a single scalar
     loss = K.variable(0.)
-    layer_features = outputs_dict['conv5_2']
-    base_image_features = layer_features[0, :, :, :]
-    combination_features = layer_features[nb_tensors - 1, :, :, :]
-    loss += content_weight * content_loss(base_image_features,
-                                          combination_features)
-    # Improvement 2
-    # Use all layers for style feature extraction and reconstruction
-    nb_layers = len(feature_layers) - 1
 
-    style_masks = []
-    if style_masks_present:
-        style_masks = mask_paths # If mask present, pass dictionary of masks to style loss
-    else:
-        style_masks = [None for _ in range(nb_style_images)] # If masks not present, pass None to the style loss
+    # 取出'block5_conv2'這一層得到的特徵值為content feature
+    layer_features = outputs_dict['block5_conv2']
+    
+    # 張量中的第0個元素是content image，格式是這樣 [base_image(0), style_image(1), combination_image(2)]
+    # 冒號語法的意思是從頭到尾，也就是該維度的元素全部選取的意思
+    base_image_features = layer_features[0, :, :, :]
+
+    # 張量中的第2個元素是combination image， [base_image(0), style_image(1), combination_image(2)]
+    # nb_tensors的值是3
+    combination_features = layer_features[nb_tensors - 1, :, :, :]
+
+    # 將loss值加上乘完權重的content loss
+    loss += content_loss(base_image_features,combination_features)
+    
+    nb_layers = len(feature_layers) - 1
 
     channel_index = 1 if K.image_dim_ordering() == "th" else -1
 
     # Improvement 3 : Chained Inference without blurring
     for i in range(len(feature_layers) - 1):
+        
+        # 當前feature layer
         layer_features = outputs_dict[feature_layers[i]]
-        shape = shape_dict[feature_layers[i]]
         combination_features = layer_features[nb_tensors - 1, :, :, :]
-        style_reference_features = layer_features[1:nb_tensors - 1, :, :, :]
-        sl1 = []
-        for j in range(nb_style_images):
-            sl1.append(style_loss(style_reference_features[j], combination_features, style_masks[j], shape))
+        style_reference_features = layer_features[1, :, :, :]
 
+        sl1 = style_loss(style_reference_features, combination_features)
+
+        # 下一個feature layer
         layer_features = outputs_dict[feature_layers[i + 1]]
-        shape = shape_dict[feature_layers[i + 1]]
         combination_features = layer_features[nb_tensors - 1, :, :, :]
-        style_reference_features = layer_features[1:nb_tensors - 1, :, :, :]
-        sl2 = []
-        for j in range(nb_style_images):
-            sl2.append(style_loss(style_reference_features[j], combination_features, style_masks[j], shape))
+        style_reference_features = layer_features[1, :, :, :]
+        
+        sl2 = style_loss(style_reference_features, combination_features)
 
-        for j in range(nb_style_images):
-            sl = sl1[j] - sl2[j]
-
-            # Improvement 4
-            # Geometric weighted scaling of style loss
-            loss += (style_weights[j] / (2 ** (nb_layers - (i + 1)))) * sl
+        sl = sl1 - sl2
+        
+        # 將loss值加上乘完權重的style loss
+        loss += (style_weight / (2 ** (nb_layers - (i + 1)))) * sl
 
     loss += total_variation_weight * total_variation_loss(combination_image)
 
@@ -553,11 +266,14 @@ def transfer(base_image, syle_image_paths, r_filename):
 
     def eval_loss_and_grads(x):
         if K.image_dim_ordering() == 'th':
-            x = x.reshape((1, 3, img_width, img_height))
+            x = x.reshape((1, 3, IMG_WIDTH, IMG_HEIGHT))
         else:
-            x = x.reshape((1, img_width, img_height, 3))
+            x = x.reshape((1, IMG_WIDTH, IMG_HEIGHT, 3))
         outs = f_outputs([x])
+        # outs 第0個為loss, 第1個gradient
         loss_value = outs[0]
+        
+        # 檢查梯度值，如果只有1個就壓平那一個;如果超過1個，就壓平全部
         if len(outs[1:]) == 1:
             grad_values = outs[1].flatten().astype('float64')
         else:
@@ -596,36 +312,7 @@ def transfer(base_image, syle_image_paths, r_filename):
     # run scipy-based optimization (L-BFGS) over the pixels of the generated image
     # so as to minimize the neural style loss
 
-
-    ##if "content" in args.init_image or "gray" in args.init_image:
-    ##    x = preprocess_image(base_image_path, True, read_mode=read_mode)
-    ##elif "noise" in args.init_image:
-    ##    x = np.random.uniform(0, 255, (1, img_width, img_height, 3)) - 128.
-    ##
-    ##    if K.image_dim_ordering() == "th":
-    ##        x = x.transpose((0, 3, 1, 2))
-    ##else:
-    ##    print("Using initial image : ", args.init_image)
-    ##    x = preprocess_image(args.init_image, read_mode=read_mode)
-
-    x = preprocess_image(base_image_path, True, read_mode=read_mode)
-
-    # We require original image if we are to preserve color in YCbCr mode
-    if preserve_color:
-        content = imread(base_image_path, mode="YCbCr")
-        content = imresize(content, (img_width, img_height))
-
-        if color_mask_present:
-            if K.image_dim_ordering() == "th":
-                color_mask_shape = (None, None, img_width, img_height)
-            else:
-                color_mask_shape = (None, img_width, img_height, None)
-
-            color_mask = load_mask(None, color_mask_shape, return_mask_img=True)
-        else:
-            color_mask = None
-    else:
-        color_mask = None
+    x = preprocess_image(base_image_path)
 
     num_iter = 10
     prev_min_val = -1
@@ -648,23 +335,13 @@ def transfer(base_image, syle_image_paths, r_filename):
         prev_min_val = min_val
         # save current generated image
         img = deprocess_image(x.copy())
-
-        if preserve_color and content is not None:
-            img = original_color_transform(content, img, mask=color_mask)
-
-        if not rescale_image:
-            img_ht = int(img_width * aspect_ratio)
-            print("Rescaling Image to (%d, %d)" % (img_width, img_ht))
-            img = imresize(img, (img_width, img_ht), interp='bilinear')
-
-        if rescale_image:
-            print("Rescaling Image to (%d, %d)" % (img_WIDTH, img_HEIGHT))
-            img = imresize(img, (img_WIDTH, img_HEIGHT), interp='bilinear')
-
-        fname = result_prefix + "_at_iteration_%d.png" % (i + 1)
+        
+        aspect_ratio = get_ratio(base_image_path)
+        img_ht = int(IMG_WIDTH * aspect_ratio)
+        print("Rescaling Image to (%d, %d)" % (IMG_WIDTH, img_ht))
+        img = imresize(img, (IMG_WIDTH, img_ht), interp='bilinear')
         
         end_time = time.time()
-        print("Image saved as", fname)
         print("Iteration %d completed in %ds" % (i + 1, end_time - start_time))
 
         if i >= num_iter - 1:

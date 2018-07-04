@@ -2,16 +2,16 @@ import os
 from werkzeug import secure_filename
 from flask import Flask, render_template, request, g , jsonify
 from flask import send_from_directory, redirect, url_for
+import model.fast_transfer as fast_transfer
 import handdraw, base64, json, sys
 import transfer
+import utils
+import gc
+
 
 ## Declare allowed file extensions
-ALLOWED_EXTENSIONS = set(['png', 'jpg','jpeg' ,'gif', 'PNG','JPG', 'JPEG','GIF'])
+ALLOWED_EXTENSIONS = set(['png', 'jpg','jpeg' ,'gif', 'bmp', 'jpe', 'gif', 'svg'])
 
-## Declare file path
-STYLE_IMG_1_PATH = 'static/img/bamboo.jpg'
-STYLE_IMG_2_PATH = 'static/img/misty-mood.jpg'
-STYLE_IMG_3_PATH = 'static/img/wave.jpg'
 
 ## Initialize flask app.
 app = Flask(__name__)
@@ -19,7 +19,7 @@ app = Flask(__name__)
 ## This function check whether the file extension is allowed
 def allowed_file(filename):
     return '.' in filename and \
-           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 ## Render Index Page
@@ -36,22 +36,24 @@ def upload_file():
     style = request.form['style']
     ## Print style to log
     print(style, file=sys.stdout)
-    STYLE_IMG_PATH = None
+    style_image_path = None
     ## Check style
-    if style == 'img-bamboo':
-        STYLE_IMG_PATH = STYLE_IMG_1_PATH
-    elif style == 'img-misty-mood':
-        STYLE_IMG_PATH = STYLE_IMG_2_PATH
-    else:
-        STYLE_IMG_PATH = STYLE_IMG_3_PATH
+    style_image_path = utils.get_style_path(style)
+    
+    if not style_image_path:
+        json_data = json.dumps({'error':'No style image found'})
+        return json_data
+    
     ## If file is valid
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         ## Start transfer
-        data = transfer.transfer(file, STYLE_IMG_PATH, filename)
+        #data = transfer.transfer(file, STYLE_IMG_PATH)
+        data = fast_transfer.transfer(file, style_image_path)
         ## encode image data to base64
         data = base64.b64encode(data).decode('UTF-8')
         ## put data into json
+        gc.collect()
         json_data = json.dumps({'image':data})
         return json_data
 
