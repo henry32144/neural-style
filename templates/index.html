@@ -3,147 +3,295 @@
 <!-- Navbar Button -->
 {% block topNavbar %}
 <a class="nav-link to-top" href="#">Home
-  <span class="sr-only">(current)</span>
+	<span class="sr-only">(current)</span>
 </a>
 {% endblock topNavbar %}
 
-<!-- Subtitle -->
-{% block secondtitle %}
-<h4 class="mt-3 text-muted">Choose a style image</h4>
-{% endblock secondtitle %}
+{% block modal %}
+<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="infoModalLabel">Woops!</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<p class="h4" id="infoModalText">Something goes wrong.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock modal %}
+
+
+{% block header %}
+<!-- Title Content -->
+<header>
+	<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+		<ol class="carousel-indicators">
+			<li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+			<li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+			<li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+		</ol>
+		<div class="carousel-inner" role="listbox">
+			<!-- Slide One - Set the background image for this slide in the line below -->
+			<div class="carousel-item active" style="background-image: url('./static/img/landing/la_muse_lucechapel.png')">
+				<div class="carousel-caption d-none d-md-block">
+					<h3>Luce Chapel & La Muse</h3>
+					<p>La Muse by Pablo Picasso</p>
+				</div>
+			</div>
+			<!-- Slide Two - Set the background image for this slide in the line below -->
+			<div class="carousel-item" style="background-image: url('./static/img/landing/udnie_lucechapel.png')">
+				<div class="carousel-caption d-none d-md-block">
+					<h3>Luce Chapel & Udnie</h3>
+					<p>Udnie by Francis Picabia.</p>
+				</div>
+			</div>
+			<!-- Slide Three - Set the background image for this slide in the line below -->
+			<div class="carousel-item" style="background-image: url('./static/img/landing/wave_crop_lucechapel.png')">
+				<div class="carousel-caption d-none d-md-block">
+					<h3>Luce Chapel & 神奈川沖浪裏</h3>
+					<p>神奈川沖浪裏 by 葛飾 北斎</p>
+				</div>
+			</div>
+		</div>
+		<a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+			<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+			<span class="sr-only">Previous</span>
+		</a>
+		<a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+			<span class="carousel-control-next-icon" aria-hidden="true"></span>
+			<span class="sr-only">Next</span>
+		</a>
+	</div>
+</header>
+{% endblock header %}
+
+{% block introduce %}
+<!-- About -->
+<section id="introduce" class="mt-5">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12 text-center">
+				<h2 class="section-heading text-uppercase">Introduce</h2>
+				<h3 class="section-subheading text-muted">Steps to create a stylish image.</h3>
+			</div>
+		</div>
+		<section>
+		  <div class="container">
+		    <div class="row align-items-center">
+		      <div class="col-lg-6 order-lg-2">
+		        <div class="p-5">
+		          <img class="img-fluid rounded-circle" src="{{url_for('static', filename='img/introduce/intro_content.jpg')}}" alt="Your image">
+		        </div>
+		      </div>
+		      <div class="col-lg-6 order-lg-1">
+		        <div class="p-5">
+		          <h2>Step 1: Upload your image</h2>
+		          <p class="h5">Upload a picture you would like to combine with the style.</p>
+		        </div>
+		      </div>
+		    </div>
+		  </div>
+		</section>
+
+		<section>
+		  <div class="container">
+		    <div class="row align-items-center">
+		      <div class="col-lg-6">
+		        <div class="p-5">
+		          <img class="img-fluid rounded-circle" src="{{url_for('static', filename='img/introduce/intro_udnie.jpg')}}" alt="Style image">
+		        </div>
+		      </div>
+		      <div class="col-lg-6">
+		        <div class="p-5">
+		          <h2>Step 2: Choose a style</h2>
+		          <p class="h5">We have already prepared some amazing styles for you! Choose one you prefer.</p>
+		        </div>
+		      </div>
+		    </div>
+		  </div>
+		</section>
+
+		<section>
+		  <div class="container">
+		    <div class="row align-items-center">
+		      <div class="col-lg-6 order-lg-2">
+		        <div class="p-5">
+		          <img class="img-fluid rounded-circle" src="{{url_for('static', filename='img/introduce/intro_result.jpg')}}" alt="Result image">
+		        </div>
+		      </div>
+		      <div class="col-lg-6 order-lg-1">
+		        <div class="p-5">
+		          <h2>Step 3: Press GO!</h2>
+		          <p class="h5">As you submit, our model will combine the stylish image for you. Typically, the image will be displayed on the bottom of the website in a minute.</p>
+		        </div>
+		      </div>
+		    </div>
+		  </div>
+		</section>
+{% endblock introduce %}
 
 <!-- Page Content -->
 {% block main %}
-	 <main class="container mt-3">
-	 	<!-- Style image section -->
-      <section class="style-image-section">
-      	  <div class="card card-default">
-      	  	<div class="card-header">Styles</div>
-      	  	<div class="container-fluid card-body" style="max-height: 450px;overflow-y: scroll;">
-      	  		<div class="row mt-2">
-		          <div class="col-lg-4">
-		            <div id="mirror" class="img-item">
-		              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/mirror.jpg') }}" alt="Mirror">
-		            </div>
-		          </div>
-		          <div class="col-lg-4">
-		            <div id="udnie" class="img-item">
-		              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/udnie.jpg') }}" alt="Udnie">
-		            </div>
-		          </div>
-		          <div class="col-lg-4">
-		            <div id="la_muse" class="img-item">
-		              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/la_muse.jpg') }}" alt="La_muse">
-		            </div>
-		          </div>
-	            </div>
-      	  		<div class="row mt-2">
-		          <div class="col-lg-4">
-		            <div id="chinese" class="img-item">
-		              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/chinese.jpg') }}" alt="Chinese">
-		            </div>
-		          </div>
-		          <div class="col-lg-4">
-		            <div id="mountain_water" class="img-item">
-		              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/mountain_water.jpg') }}" alt="MountainWater">
-		            </div>
-		          </div>
-		          <div class="col-lg-4">
-		            <div id="zhangdaqian" class="img-item">
-		              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/zhangdaqian.jpg') }}" alt="Zhangdaqian">
-		            </div>
-		          </div>    
-		        </div>
-		        
-	            <div class="row mt-2">
-		          <div class="col-lg-4">
-		            <div id="des_glaneuses" class="img-item">
-		              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/des_glaneuses.jpg') }}" alt="Des_glaneuses">
-		            </div>
-		          </div>
-		          <div class="col-lg-4">
-		            <div id="wave_crop" class="img-item">
-		              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/wave_crop.jpg') }}" alt="Wave_crop">
-		            </div>
-		          </div>
-		          <div class="col-lg-4">
-		            <div id="starry_night" class="img-item">
-		              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/starry_night.jpg') }}" alt="Starry_night">
-		            </div>
-		          </div>
-	            </div>
-	            <div class="row mt-2">
-		          <div class="col-lg-4">
-		            <div id="monalisa" class="img-item">
-		              <img class="img-thumbnail style-image" src="{{url_for('static', filename='img/monalisa.jpg') }}" alt="Monalisa">
-		            </div>
-		          </div>
-	            </div>
-	        </div>
-          </div>
-        </section>
-        <div class="row mt-4">
-          <div class="col-lg-12 text-center">
-            <h4 class="text-muted" id="selected-style">You choosed: </h4>
-          </div>
-        </div>
-        <HR>
-        <!--  Form upload section -->
-        <div class="row mt-4">
-          <div class="col-lg-12 text-center">
-            <h4 class="text-muted">Upload your image</h4>
-          </div>
-        </div>
-        <form action="javascript:;" id="image-submit" onsubmit="return makeForm(this);" method=post enctype=multipart/form-data>
-          <div class="row mt-3">
-            <div class="col-lg-3 text-center">
-              <input name="file" class="form-control" type="file" id="img-input" accept="image/*">
-            </div>
-            <div class="col-lg-6">
-              <img id="img-preview" class="img-fluid mx-auto" src="" alt="your image" />
-            </div>
-          </div>
-          <div class="d-flex justify-content-center">
-            <div class="row">
-              <button type="submit" onclick="return makeForm(this);" id="img-upload" class="btn btn-primary mt-4">Go!</button>
-            </div>
-          </div>
-        </form>
-    </main>
-    <!--  Result section -->
-    <section class="result-section container mt-5 d-none">
-      <div class="row">
-        <div class="col-lg-12 mb-5">
-          <HR>
-          <h4 class="text-muted text-center mt-5" id="result-state">Wait a minute</h4>
-          <div class="loader text-center mt-5 mx-auto"></div>
-          <img id="img-output" class="img-fluid d-none mx-auto" src="" alt="your image" />
-        </div>        
-      </div>
-    </section>
+<HR class="mt-3">
+<div class="container mt-5">
+	<div class="row">
+		<div class="col-md-12 text-center">
+			<h2 class="section-heading text-uppercase">Create your own!</h2>
+		</div>
+	</div>
+</div>
+<main class="container mt-3">
+	<div class="mt-3 row">
+		<!--  Form upload section -->
+		<div class="col-md-6 mt-3">
+			<div class="text-center mb-3">
+				<h4 class="text-muted">Upload your image</h4>
+			</div>
+			<div class="card card-default">
+				<div class="card-header">Image</div>
+				<form action="javascript:;" class="file-loading" id="image-submit" onsubmit="return makeForm(this);" method=post enctype=multipart/form-data>
+					<input name="file" type="file" id="img-input" data-show-preview="true" data-preview-file-type="text" multiple>
+				</form>
+			</div>
+		</div>
+		<!-- Style image section -->
+		<section class="style-image-section col-md-6 mt-3">
+			<h4 class="text-muted text-center mb-3">Choose a style</h4>
+			<div class="card card-default">
+				<div class="card-header">Styles</div>
+				<div class="container-fluid card-body" style="max-height: 450px;overflow-y: scroll;">
+					<div class="row mt-2">
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="mirror" class="img-item">
+								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/mirror.jpg')}}" alt="Mirror">
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="udnie" class="img-item">
+								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/udnie.jpg')}}" alt="Udnie">
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="la_muse" class="img-item">
+								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/la_muse.jpg')}}" alt="La_muse">
+							</div>
+						</div>
+					</div>
+					<div class="row mt-2">
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="chinese" class="img-item">
+								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/chinese.jpg')}}" alt="Chinese">
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="mountain_water" class="img-item">
+								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/mountain_water.jpg')}}" alt="MountainWater">
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="zhangdaqian" class="img-item">
+								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/zhangdaqian.jpg')}}" alt="Zhangdaqian">
+							</div>
+						</div>    
+					</div>
 
-    <!--  To top button -->
-    <a class="rounded to-top" id="scroll-to-top" href="#page-top">
-      <i class="fa fa-angle-up"></i>
-    </a>
+					<div class="row mt-2">
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="des_glaneuses" class="img-item">
+								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/des_glaneuses.jpg')}}" alt="Des_glaneuses">
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="wave_crop" class="img-item">
+								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/wave_crop.jpg')}}" alt="Wave_crop">
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="starry_night" class="img-item">
+								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/starry_night.jpg')}}" alt="Starry_night">
+							</div>
+						</div>
+					</div>
+					<div class="row mt-2">
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="monalisa" class="img-item">
+								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/monalisa.jpg')}}" alt="Monalisa">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row mt-3">
+				<div class="col-md-12 text-center">
+					<h4 class="text-muted" id="selected-style">Style: </h4>
+				</div>
+			</div>
+		</section>
+		<HR>
+	</div>
+	<div class="container mt-3">
+		<div class="d-flex justify-content-center">
+		  <div class="row">
+		    <button type="submit" onclick="return makeForm(this);" id="img-upload" class="btn btn-primary mt-4">Go!</button>
+		  </div>
+		</div>
+	</div>
+</main>
+<!--  Result section -->
+
+<section class="result-section container mt-5 d-none">
+	<div class="row">
+		<div class="col-md-12 mb-5">
+			<HR>
+			<h4 class="text-muted text-center mt-5" id="result-state">Wait a minute</h4>
+			<div class="loader text-center mt-5 mx-auto"></div>
+			<img id="img-output" class="img-fluid d-none mx-auto" src="" alt="your image" />
+		</div>        
+	</div>
+</section>
+
+<!--  To top button -->
+<a class="rounded to-top" id="scroll-to-top" href="#page-top">
+	<i class="fa fa-angle-up"></i>
+</a>
 {% endblock main %}
 
 {% block script %}
+
 <script type="text/javascript">
 	"use strict";
 	var selectedStyleImage;
+	var contentNotUploadedText = "Please upload a picture";
+	var styleNotSelectedText = "Please select a style";
+
+
+	// Set the information text of modal and display it
+	function showInfoModal(text) {
+		var modal = $("#infoModal");
+		modal.find('#infoModalText').text(text);
+		modal.modal('show');
+	}
 
 	function makeForm(e) {
 		// Prevent default form behavior
 		event.preventDefault();
 		// Check the file is not empty and a style has been selected
-		if($("#img-input").prop("files")[0] != undefined && selectedStyleImage != undefined) {
+		if($("#img-input").fileinput('getFileStack')[0] != undefined && selectedStyleImage != undefined) {
 			var form = new FormData();
-			form.append("file", $("#img-input").prop("files")[0]);
+			var files = $("#img-input").fileinput('getFileStack');
+
+			form.append("file", files[0]);
         	// NEED TO CHANGE IN FUTURE
         	form.append("style", selectedStyleImage);
-        	alert(form);
-			sendData(form);
+        	sendData(form);
 			// Show the result section
 			$(".result-section").toggleClass("d-none", false);
 			$("#result-state").text("Wait a minute!");
@@ -151,13 +299,13 @@
 			toggleOutputImage(false);
 			// Scroll to the result section
 			$('html, body').animate({
-			                scrollTop: $(".result-section").offset().top
+				scrollTop: $(".result-section").offset().top
 			            }, 1000, //Millisecond
 			            "easeInQuint");
 		} else if(selectedStyleImage == undefined) {
-				alert('no style selected');
+			showInfoModal(styleNotSelectedText);
 		} else {
-			alert('no uploaded');
+			showInfoModal(contentNotUploadedText);
 		}
 	}
 
@@ -165,11 +313,11 @@
 	function readURL(input) {
 		if (input.files && input.files[0]) {
 			var reader = new FileReader();
-		    reader.onload = function(e) {
-		    	$("#img-preview").css("visibility", "visible");
-		    	$("#img-preview").attr("src", e.target.result);
-		    }
-		    reader.readAsDataURL(input.files[0]);
+			reader.onload = function(e) {
+				$("#img-preview").css("visibility", "visible");
+				$("#img-preview").attr("src", e.target.result);
+			}
+			reader.readAsDataURL(input.files[0]);
 		}
 	}
 
@@ -177,18 +325,18 @@
 	function sendData(formdata) {
 		alert('send data');
 		$.ajax({
-		    url: "/upload_image",
-		    data: formdata,
-		    type: "POST",
-		    contentType: false,
-		    processData: false,
-		    async: true,
-            cache: false,
-            headers: { "cache-control": "no-cache" },
-		    success: function(response) {
-		        console.log('json return successful');
-		        console.log(typeof(response));
-		        var json_data = JSON.parse(response);
+			url: "/upload_image",
+			data: formdata,
+			type: "POST",
+			contentType: false,
+			processData: false,
+			async: true,
+			cache: false,
+			headers: { "cache-control": "no-cache" },
+			success: function(response) {
+				console.log('json return successful');
+				console.log(typeof(response));
+				var json_data = JSON.parse(response);
 		        if (json_data["error"]) { // has error
 		        	displayError(json_data["error"]);
 		    	} else { // success
@@ -196,10 +344,11 @@
 		    	}
 		    },
 		    error: function(error) {
-		        console.log("fail");
-		        console.log(error);
-		        alert('fail');
-		        alert(error.responseText);
+		    	console.log("fail");
+		    	console.log(error);
+		    	alert("fail");
+		    	alert(error.responseText);
+		    	displayError("Fail");
 		    }
 		});
 	};
@@ -232,55 +381,69 @@
 
 	}
 
+	
+
+	$("#img-input").fileinput({
+		uploadUrl: '/dropzone_dummy',
+		dropZoneEnabled: true,
+		theme: "fa",
+		autoReplace: true,
+		showBrowse: true,
+		showCaption: true,
+		showRemove: true,
+		showUpload: false,
+		maxFileSize: 3072,
+		browseOnZoneClick: true,
+		allowedFileExtensions: ["jpg", "png", "gif", "jpeg", "tif", "tiff"],
+		maxFileCount: 1,
+		fileActionSettings: {
+			showUpload: false,
+			showZoom: false,
+		}
+	});
 	// Load this part while the DOM is ready
 	$(function() {
-		// Listen to the upload image button
-		$("#img-input").change(function() {
-			readURL(this);
-		});
-		// Clean the former selected image
-		$("#img-input").click(function() {
-			$("#img-preview").css("visibility", "hidden");
-			$("#img-input").prop("value", "");
-			$("#img-output").attr("src","");
-			toggleOutputImage(false);
-			$(".result-section").toggleClass("d-none", true);
-		});
+		// // Listen to the upload image button
+		// $("#img-input").change(function() {
+		// 	readURL(this);
+		// });
+		// // Clean the former selected image
+		// $("#img-input").click(function() {
+		// 	$("#img-preview").css("visibility", "hidden");
+		// 	$("#img-input").prop("value", "");
+		// 	$("#img-output").attr("src","");
+		// 	toggleOutputImage(false);
+		// 	$(".result-section").toggleClass("d-none", true);
+		// });
 
 		// Listen to the style image selected event
+
 		$(".style-image").click(function() {
-	    	$(".style-image").removeClass("item-onclick");
-	    	$(this).addClass("item-onclick");
-	    	var selectedId = $(this).parent(".img-item").attr('id');
-	    	$("#selected-style").text("You choosed: " + selectedId);
-	    	selectedStyleImage = selectedId;
-	  	});
+			$(".style-image").removeClass("item-onclick");
+			$(this).addClass("item-onclick");
+			var selectedId = $(this).parent(".img-item").attr('id');
+			$("#selected-style").text("Style: " + selectedId);
+			selectedStyleImage = selectedId;
+		});
 
 		// To top button
-	  	$(".to-top").click(function() {
-	    	$('html, body').animate({
-	            scrollTop: $("#page-top").offset().top
-	        }, 1000, 
-	        "easeInOutExpo");
-	    	return false;
-	  	});
+		$(".to-top").click(function() {
+			$('html, body').animate({
+				scrollTop: $("#page-top").offset().top
+			}, 1000, 
+			"easeInOutExpo");
+			return false;
+		});
 
-	  	$(".to-top").click(function() {
-	    	$('html, body').animate({
-	            scrollTop: $("#page-top").offset().top
-	        }, 1000, 
-	        "easeInOutExpo");
-	    	return false;
-	  	});
 	  	// Display the to top button
 	  	$(document).scroll(function() {
-	    	var scrollDistance = $(this).scrollTop();
-	    	if (scrollDistance > 100) {
-	      		$('#scroll-to-top').fadeIn();
-	    	} else {
-	      	$('#scroll-to-top').fadeOut();
-	    	}
+	  		var scrollDistance = $(this).scrollTop();
+	  		if (scrollDistance > 100) {
+	  			$('#scroll-to-top').fadeIn();
+	  		} else {
+	  			$('#scroll-to-top').fadeOut();
+	  		}
 	  	});
-	}); 
-</script>
-{% endblock script %}
+	  }); 
+	</script>
+	{% endblock script %}

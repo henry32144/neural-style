@@ -28,6 +28,21 @@ body {
     animation: spin 2s linear infinite;
 }
 
+
+.carousel-item {
+  height: 65vh;
+  min-height: 300px;
+  background: no-repeat center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  background-repeat:no-repeat;
+  background-attachment:inherit;
+  background-position:center;
+}
+
+
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -81,3 +96,4 @@ body {
 #scroll-to-top i {
   font-weight: 800;
 }
+

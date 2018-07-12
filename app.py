@@ -3,7 +3,7 @@ from werkzeug import secure_filename
 from flask import Flask, render_template, request, g , jsonify
 from flask import send_from_directory, redirect, url_for
 import model.fast_transfer as fast_transfer
-import handdraw, base64, json, sys
+import base64, json, sys
 import transfer
 import utils
 import gc
@@ -57,6 +57,10 @@ def upload_file():
         json_data = json.dumps({'image':data})
         return json_data
 
+@app.route('/dropzone_dummy', methods=['GET'])
+def dropzone_dummy():
+    ## For dropzone
+    return ''
 
 if __name__ == '__main__':
     app.run(debug=True)
