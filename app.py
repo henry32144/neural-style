@@ -3,7 +3,7 @@ from werkzeug import secure_filename
 from flask import Flask, render_template, request, g , jsonify
 from flask import send_from_directory, redirect, url_for
 import model.fast_transfer as fast_transfer
-import handdraw, base64, json, sys
+import base64, json, sys
 import transfer
 import utils
 import gc
