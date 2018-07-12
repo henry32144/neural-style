@@ -16,7 +16,7 @@ import gc
 from skimage import color, exposure, transform
 from scipy import ndimage
 from scipy.ndimage.filters import median_filter
-from model.img_util import preprocess_image, preprocess_image_for_generating, preprocess_reflect_image, crop_image
+from model.img_util import preprocess_image, preprocess_image_for_generating, preprocess_reflect_image, crop_image, preprocess_test
 from io import BytesIO
 import model.nets as nets
 
@@ -80,8 +80,12 @@ def transfer(base_image, syle_image_path, original_color=0, blend=0, media_filte
     blend_alpha = blend
     media_filter = media_filter
 
+    #aspect_ratio, x = preprocess_reflect_image(input_file, size_multiple=4)
+    
     aspect_ratio, x = preprocess_reflect_image(input_file, size_multiple=4)
 
+    #img_width = x.shape[1]
+    #img_height = x.shape[2]
     img_width = img_height = x.shape[1]
     net = nets.image_transform_net(img_width,img_height)
     model = nets.loss_net(net.output,net.input,img_width,img_height,"",0,0)

@@ -2,6 +2,7 @@ from scipy.misc import imread, imresize, imsave, fromimage, toimage
 from sklearn.feature_extraction.image import reconstruct_from_patches_2d, extract_patches_2d
 from PIL import Image
 import numpy as np
+import math
 import os
 import tensorflow as tf
 from keras import backend as K
@@ -98,17 +99,51 @@ def preprocess_image_for_generating(image_path, size_multiple=4):
 
 
 
+def preprocess_test(image_path, size_multiple=4):
+    img = imread(image_path, mode="RGB")  # Prevents crashes due to PNG images (ARGB)
+    org_w = img.shape[0]
+    org_h = img.shape[1]
+
+    aspect_ratio = org_h/org_w
+    sw = (org_w // size_multiple) * size_multiple # Make sure width is a multiple of 4
+    sh = (org_h // size_multiple) * size_multiple # Make sure width is a multiple of 4
+    img = imresize(img, (sw, sh),interp='bilinear')
+    
+    if K.image_dim_ordering() == "Th":
+        img = img.transpose((2, 0, 1)).astype(np.float32)
+    else:
+        pass
+        img = img.astype(np.float32)
+
+    img = np.expand_dims(img, axis=0)
+    return (aspect_ratio  ,img)
+
+def check_resize_img(im):
+    width = im.shape[0]
+    height = im.shape[1]
+    #1024 * 768 * 3
+    threshold = 2359296
+    if im.size >= threshold:
+        if width >= height:
+            new_width = int(math.sqrt(threshold/1.25))
+            new_height = int(new_width * height * 1.0 / width)
+        else:
+            new_height = int(math.sqrt(threshold/1.25))
+            new_width = int(new_height * width * 1.0 / height)
+        im = imresize(im, (new_width, new_height),interp='bilinear')
+    return im
+
 
 def preprocess_reflect_image(image_path, size_multiple=4):
     img = imread(image_path, mode="RGB")  # Prevents crashes due to PNG images (ARGB)
+    img = check_resize_img(img) # check image size
     org_w = img.shape[0]
     org_h = img.shape[1]
     aspect_ratio = org_h/org_w
     
     print(org_w,',', org_h,',', aspect_ratio)
 
-##    org_w = 800
-##    org_h = int(org_w * aspect_ratio)
+    
     sw = (org_w // size_multiple) * size_multiple # Make sure width is a multiple of 4
     sh = (org_h // size_multiple) * size_multiple # Make sure width is a multiple of 4
 
