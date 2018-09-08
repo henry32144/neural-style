@@ -25,7 +25,7 @@ Environment
 or directly use pip install the requirement txt file
 
 ```
-pip -r requirement.txt
+pip install -r requirement.txt
 ```
 
 How to Use
