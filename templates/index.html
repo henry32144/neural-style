@@ -79,22 +79,22 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12 text-center">
-				<h2 class="section-heading text-uppercase">Introduce</h2>
-				<h3 class="section-subheading text-muted">Steps to create a stylish image.</h3>
+				<h2 class="section-heading text-uppercase">Welcome to Tucana</h2>
+				<h3 class="section-subheading text-muted">Please choose a transfer mode.</h3>
 			</div>
 		</div>
 		<section>
 		  <div class="container">
-		    <div class="row align-items-center">
+		    <div class="row align-items-center border rounded" id="fast-style">
 		      <div class="col-lg-6 order-lg-2">
 		        <div class="p-5">
-		          <img class="img-fluid rounded-circle" src="{{url_for('static', filename='img/introduce/intro_content.jpg')}}" alt="Your image">
+		          <img class="img-fluid rounded" src="{{url_for('static', filename='img/introduce/intro_content.jpg')}}" alt="Your image">
 		        </div>
 		      </div>
 		      <div class="col-lg-6 order-lg-1">
 		        <div class="p-5">
-		          <h2>Step 1: Upload your image</h2>
-		          <p class="h5">Upload a picture you would like to combine with the style.</p>
+		          <h2>Fast neural style</h2>
+		          <p class="h5">In this mode, you can select one style we prepared for you.</p>
 		        </div>
 		      </div>
 		    </div>
@@ -103,16 +103,16 @@
 
 		<section>
 		  <div class="container">
-		    <div class="row align-items-center">
-		      <div class="col-lg-6">
+		    <div class="row align-items-center border rounded" id="style-swap">
+		      <div class="col-lg-6 order-lg-2">
 		        <div class="p-5">
-		          <img class="img-fluid rounded-circle" src="{{url_for('static', filename='img/introduce/intro_udnie.jpg')}}" alt="Style image">
+		          <img class="img-fluid rounded" src="{{url_for('static', filename='img/introduce/intro_udnie.jpg')}}" alt="Style image">
 		        </div>
 		      </div>
 		      <div class="col-lg-6">
 		        <div class="p-5">
-		          <h2>Step 2: Choose a style</h2>
-		          <p class="h5">We have already prepared some amazing styles for you! Choose one you prefer.</p>
+		          <h2>Style swap transfer</h2>
+		          <p class="h5">In this mode, you can upload any image you like as the style.</p>
 		        </div>
 		      </div>
 		    </div>
@@ -121,142 +121,28 @@
 
 		<section>
 		  <div class="container">
-		    <div class="row align-items-center">
+		    <div class="row align-items-center border rounded" id="mask-style">
 		      <div class="col-lg-6 order-lg-2">
 		        <div class="p-5">
-		          <img class="img-fluid rounded-circle" src="{{url_for('static', filename='img/introduce/intro_result.jpg')}}" alt="Result image">
+		          <img class="img-fluid rounded" src="{{url_for('static', filename='img/introduce/intro_result.jpg')}}" alt="Result image">
 		        </div>
 		      </div>
 		      <div class="col-lg-6 order-lg-1">
 		        <div class="p-5">
-		          <h2>Step 3: Press GO!</h2>
-		          <p class="h5">As you submit, our model will combine the stylish image for you. Typically, the image will be displayed on the bottom of the website in a minute.</p>
+		          <h2>Mask neural style</h2>
+		          <p class="h5">In this mode, you can select two styles, the machine will detect 
+		          some objects in the image and apply one style on these objects, another style on background.</p>
 		        </div>
 		      </div>
 		    </div>
 		  </div>
 		</section>
+	</div>
+</section>
 {% endblock introduce %}
 
 <!-- Page Content -->
 {% block main %}
-<HR class="mt-3">
-<div class="container mt-5">
-	<div class="row">
-		<div class="col-md-12 text-center">
-			<h2 class="section-heading text-uppercase">Create your own!</h2>
-		</div>
-	</div>
-</div>
-<main class="container mt-3">
-	<div class="mt-3 row">
-		<!--  Form upload section -->
-		<div class="col-md-6 mt-3">
-			<div class="text-center mb-3">
-				<h4 class="text-muted">Upload your image</h4>
-			</div>
-			<div class="card card-default">
-				<div class="card-header">Image</div>
-				<form action="javascript:;" class="file-loading" id="image-submit" onsubmit="return makeForm(this);" method=post enctype=multipart/form-data>
-					<input name="file" type="file" id="img-input" data-show-preview="true" data-preview-file-type="text" multiple>
-				</form>
-			</div>
-		</div>
-		<!-- Style image section -->
-		<section class="style-image-section col-md-6 mt-3">
-			<h4 class="text-muted text-center mb-3">Choose a style</h4>
-			<div class="card card-default">
-				<div class="card-header">Styles</div>
-				<div class="container-fluid card-body" style="max-height: 450px;overflow-y: scroll;">
-					<div class="row mt-2">
-						<div class="col-lg-4 col-md-4 col-sm-4">
-							<div id="mirror" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/mirror.jpg')}}" alt="Mirror">
-							</div>
-						</div>
-						<div class="col-lg-4 col-md-4 col-sm-4">
-							<div id="udnie" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/udnie.jpg')}}" alt="Udnie">
-							</div>
-						</div>
-						<div class="col-lg-4 col-md-4 col-sm-4">
-							<div id="la_muse" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/la_muse.jpg')}}" alt="La_muse">
-							</div>
-						</div>
-					</div>
-					<div class="row mt-2">
-						<div class="col-lg-4 col-md-4 col-sm-4">
-							<div id="chinese" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/chinese.jpg')}}" alt="Chinese">
-							</div>
-						</div>
-						<div class="col-lg-4 col-md-4 col-sm-4">
-							<div id="mountain_water" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/mountain_water.jpg')}}" alt="MountainWater">
-							</div>
-						</div>
-						<div class="col-lg-4 col-md-4 col-sm-4">
-							<div id="zhangdaqian" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/zhangdaqian.jpg')}}" alt="Zhangdaqian">
-							</div>
-						</div>    
-					</div>
-
-					<div class="row mt-2">
-						<div class="col-lg-4 col-md-4 col-sm-4">
-							<div id="des_glaneuses" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/des_glaneuses.jpg')}}" alt="Des_glaneuses">
-							</div>
-						</div>
-						<div class="col-lg-4 col-md-4 col-sm-4">
-							<div id="wave_crop" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/wave_crop.jpg')}}" alt="Wave_crop">
-							</div>
-						</div>
-						<div class="col-lg-4 col-md-4 col-sm-4">
-							<div id="starry_night" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/starry_night.jpg')}}" alt="Starry_night">
-							</div>
-						</div>
-					</div>
-					<div class="row mt-2">
-						<div class="col-lg-4 col-md-4 col-sm-4">
-							<div id="monalisa" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/monalisa.jpg')}}" alt="Monalisa">
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-md-12 text-center">
-					<h4 class="text-muted" id="selected-style">Style: </h4>
-				</div>
-			</div>
-		</section>
-		<HR>
-	</div>
-	<div class="container mt-3">
-		<div class="d-flex justify-content-center">
-		  <div class="row">
-		    <button type="submit" onclick="return makeForm(this);" id="img-upload" class="btn btn-primary mt-4">Go!</button>
-		  </div>
-		</div>
-	</div>
-</main>
-<!--  Result section -->
-
-<section class="result-section container mt-5 d-none">
-	<div class="row">
-		<div class="col-md-12 mb-5">
-			<HR>
-			<h4 class="text-muted text-center mt-5" id="result-state">Wait a minute</h4>
-			<div class="loader text-center mt-5 mx-auto"></div>
-			<img id="img-output" class="img-fluid d-none mx-auto" src="" alt="your image" />
-		</div>        
-	</div>
-</section>
 
 <!--  To top button -->
 <a class="rounded to-top" id="scroll-to-top" href="#page-top">
@@ -268,164 +154,8 @@
 
 <script type="text/javascript">
 	"use strict";
-	var selectedStyleImage;
-	var contentNotUploadedText = "Please upload a picture";
-	var styleNotSelectedText = "Please select a style";
-
-
-	// Set the information text of modal and display it
-	function showInfoModal(text) {
-		var modal = $("#infoModal");
-		modal.find('#infoModalText').text(text);
-		modal.modal('show');
-	}
-
-	function makeForm(e) {
-		// Prevent default form behavior
-		event.preventDefault();
-		// Check the file is not empty and a style has been selected
-		if($("#img-input").fileinput('getFileStack')[0] != undefined && selectedStyleImage != undefined) {
-			var form = new FormData();
-			var files = $("#img-input").fileinput('getFileStack');
-
-			form.append("file", files[0]);
-        	// NEED TO CHANGE IN FUTURE
-        	form.append("style", selectedStyleImage);
-        	sendData(form);
-			// Show the result section
-			$(".result-section").toggleClass("d-none", false);
-			$("#result-state").text("Wait a minute!");
-			$(".loader").toggleClass("d-none", false);
-			toggleOutputImage(false);
-			// Scroll to the result section
-			$('html, body').animate({
-				scrollTop: $(".result-section").offset().top
-			            }, 1000, //Millisecond
-			            "easeInQuint");
-		} else if(selectedStyleImage == undefined) {
-			showInfoModal(styleNotSelectedText);
-		} else {
-			showInfoModal(contentNotUploadedText);
-		}
-	}
-
-	// Read the image user choosed to upload
-	function readURL(input) {
-		if (input.files && input.files[0]) {
-			var reader = new FileReader();
-			reader.onload = function(e) {
-				$("#img-preview").css("visibility", "visible");
-				$("#img-preview").attr("src", e.target.result);
-			}
-			reader.readAsDataURL(input.files[0]);
-		}
-	}
-
-	// Submit form data
-	function sendData(formdata) {
-		alert('send data');
-		$.ajax({
-			url: "/upload_image",
-			data: formdata,
-			type: "POST",
-			contentType: false,
-			processData: false,
-			async: true,
-			cache: false,
-			headers: { "cache-control": "no-cache" },
-			success: function(response) {
-				console.log('json return successful');
-				console.log(typeof(response));
-				var json_data = JSON.parse(response);
-		        if (json_data["error"]) { // has error
-		        	displayError(json_data["error"]);
-		    	} else { // success
-		    		setImage(JSON.parse(response));
-		    	}
-		    },
-		    error: function(error) {
-		    	console.log("fail");
-		    	console.log(error);
-		    	alert("fail");
-		    	alert(error.responseText);
-		    	displayError("Fail");
-		    }
-		});
-	};
-
-	// Set image while the request is success
-	function displayError(data) {
-		$(".loader").toggleClass("d-none", true);
-		$("#result-state").text(data);
-	}
-
-	// Set image while the request is success
-	function setImage(data) {
-		$("#result-state").text("Success!");
-		$(".loader").toggleClass("d-none", true);
-		$("#img-output").attr("src","data:image/jpeg;base64," + data["image"]);
-		$("#img-output").css("visibility", "visible");
-		toggleOutputImage(true);
-	}
-
-	// Set image output display or not
-	function toggleOutputImage(turnon) {
-		if(turnon) {
-			$("#img-output").toggleClass("d-block", true);
-			$("#img-output").toggleClass("d-none", false);
-		}
-		else {
-			$("#img-output").toggleClass("d-block", false);
-			$("#img-output").toggleClass("d-none", true);
-		}
-
-	}
-
-	
-
-	$("#img-input").fileinput({
-		uploadUrl: '/dropzone_dummy',
-		dropZoneEnabled: true,
-		theme: "fa",
-		autoReplace: true,
-		showBrowse: true,
-		showCaption: true,
-		showRemove: true,
-		showUpload: false,
-		maxFileSize: 3072,
-		browseOnZoneClick: true,
-		allowedFileExtensions: ["jpg", "png", "gif", "jpeg", "tif", "tiff"],
-		maxFileCount: 1,
-		fileActionSettings: {
-			showUpload: false,
-			showZoom: false,
-		}
-	});
 	// Load this part while the DOM is ready
 	$(function() {
-		// // Listen to the upload image button
-		// $("#img-input").change(function() {
-		// 	readURL(this);
-		// });
-		// // Clean the former selected image
-		// $("#img-input").click(function() {
-		// 	$("#img-preview").css("visibility", "hidden");
-		// 	$("#img-input").prop("value", "");
-		// 	$("#img-output").attr("src","");
-		// 	toggleOutputImage(false);
-		// 	$(".result-section").toggleClass("d-none", true);
-		// });
-
-		// Listen to the style image selected event
-
-		$(".style-image").click(function() {
-			$(".style-image").removeClass("item-onclick");
-			$(this).addClass("item-onclick");
-			var selectedId = $(this).parent(".img-item").attr('id');
-			$("#selected-style").text("Style: " + selectedId);
-			selectedStyleImage = selectedId;
-		});
-
 		// To top button
 		$(".to-top").click(function() {
 			$('html, body').animate({
@@ -435,6 +165,20 @@
 			return false;
 		});
 
+		$("#fast-style").click(function() {
+			window.location.href = '/faststyle';
+			return false;
+		});
+
+		$("#style-swap").click(function() {
+			window.location.href = '/styleswap';
+			return false;
+		});
+
+		$("#mask-style").click(function() {
+			window.location.href = '/maskstyle';
+			return false;
+		});
 	  	// Display the to top button
 	  	$(document).scroll(function() {
 	  		var scrollDistance = $(this).scrollTop();
