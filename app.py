@@ -28,6 +28,21 @@ def index():
     return render_template(
         'index.html')
 
+@app.route('/faststyle')
+def fastStyle():
+    return render_template(
+        'fastStyle.html')
+
+@app.route('/maskstyle')
+def maskStyle():
+    return render_template(
+        'maskStyle.html')
+
+@app.route('/styleswap')
+def styleSwap():
+    return render_template(
+        'styleSwap.html')
+
 ## Deal with upload request
 @app.route('/upload_image', methods=['POST'])
 def upload_file():

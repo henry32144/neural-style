@@ -85,7 +85,7 @@
 		</div>
 		<section>
 		  <div class="container">
-		    <div class="row align-items-center border rounded" id="fast-style">
+		    <div class="row align-items-center border rounded method-selection" id="fast-style">
 		      <div class="col-lg-6 order-lg-2">
 		        <div class="p-5">
 		          <img class="img-fluid rounded" src="{{url_for('static', filename='img/introduce/intro_content.jpg')}}" alt="Your image">
@@ -103,7 +103,7 @@
 
 		<section>
 		  <div class="container">
-		    <div class="row align-items-center border rounded" id="style-swap">
+		    <div class="row align-items-center border rounded method-selection" id="style-swap">
 		      <div class="col-lg-6 order-lg-2">
 		        <div class="p-5">
 		          <img class="img-fluid rounded" src="{{url_for('static', filename='img/introduce/intro_udnie.jpg')}}" alt="Style image">
@@ -121,7 +121,7 @@
 
 		<section>
 		  <div class="container">
-		    <div class="row align-items-center border rounded" id="mask-style">
+		    <div class="row align-items-center border rounded method-selection" id="mask-style">
 		      <div class="col-lg-6 order-lg-2">
 		        <div class="p-5">
 		          <img class="img-fluid rounded" src="{{url_for('static', filename='img/introduce/intro_result.jpg')}}" alt="Result image">
@@ -165,9 +165,22 @@
 			return false;
 		});
 
-		$("#fast-style").click(function() {
-			window.location.href = '/faststyle';
-			return false;
+		$("#style-swap").hover(function(){
+		    $("#style-swap").toggleClass("border-primary");
+		},function(){
+		    $("#style-swap").toggleClass("border-primary");
+		});
+
+		$("#mask-style").hover(function(){
+		    $("#mask-style").toggleClass("border-primary");
+		},function(){
+		    $("#mask-style").toggleClass("border-primary");
+		});
+
+		$("#fast-style").hover(function(){
+		    $("#fast-style").toggleClass("border-primary");
+		},function(){
+		    $("#fast-style").toggleClass("border-primary");
 		});
 
 		$("#style-swap").click(function() {
@@ -177,6 +190,11 @@
 
 		$("#mask-style").click(function() {
 			window.location.href = '/maskstyle';
+			return false;
+		});
+
+		$("#fast-style").click(function() {
+			window.location.href = '/faststyle';
 			return false;
 		});
 	  	// Display the to top button

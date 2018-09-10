@@ -48,6 +48,10 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+.method-selection:hover {
+	cursor:pointer;
+}
+
 #img-preview {
 	max-width: 100%;
 	display: block;
