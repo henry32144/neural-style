@@ -3,8 +3,7 @@ from keras.models import Model,Sequential
 from keras.optimizers import Adam, SGD,Nadam,Adadelta
 from keras.preprocessing.image import ImageDataGenerator
 from keras import backend as K
-from model.layers import VGGNormalize,ReflectionPadding2D,Denormalize,conv_bn_relu,res_conv,dconv_bn_nolinear
-from model.loss import dummy_loss,StyleReconstructionRegularizer,FeatureReconstructionRegularizer,TVRegularizer
+
 from scipy.misc import imsave
 
 import time
@@ -16,9 +15,11 @@ import tensorflow as tf
 from skimage import color, exposure, transform
 from scipy import ndimage
 from scipy.ndimage.filters import median_filter
-from model.img_util import preprocess_image, preprocess_image_for_generating, preprocess_reflect_image, crop_image
+from models.src.img_util import preprocess_reflect_image, crop_image
+from models.src.layers import VGGNormalize,ReflectionPadding2D,Denormalize,conv_bn_relu,res_conv,dconv_bn_nolinear
+from models.src.loss import dummy_loss,StyleReconstructionRegularizer,FeatureReconstructionRegularizer,TVRegularizer
 
-import model.nets as nets
+import models.src.nets as nets
 
 
 # from 6o6o's fork. https://github.com/6o6o/chainer-fast-neuralstyle/blob/master/generate.py

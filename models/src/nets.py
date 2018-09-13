@@ -1,16 +1,65 @@
-from keras.layers import Input
+from keras.layers import Input, Lambda
 from keras.layers.merge import concatenate
 from keras.models import Model,Sequential
+from keras.layers.convolutional import UpSampling2D, Conv2D
+from keras.applications.vgg19 import VGG19
 from keras import backend as K
-from model.layers import InputNormalize,VGGNormalize,ReflectionPadding2D,Denormalize,conv_bn_relu,res_conv,dconv_bn_nolinear
-from model.loss import StyleReconstructionRegularizer,FeatureReconstructionRegularizer,TVRegularizer
-from model.VGG16 import VGG16
-import model.img_util as img_util
+from models.src.layers import InputNormalize,VGGNormalize,ReflectionPadding2D,Denormalize,conv_bn_relu,res_conv,dconv_bn_nolinear
+from models.src.layers import conv_in_relu, res_in_conv, wct_style_swap, TanhNormalize
+from models.src.loss import StyleReconstructionRegularizer,FeatureReconstructionRegularizer,TVRegularizer
+from models.src.VGG16 import VGG16
+import models.src.img_util as img_util
 
 
 
+# "Style-swap": encode net with VGG19 3-3 layer
+def build_encode_net(input_shape=(500, 500, 3)):
+    
+    content_input = Input(shape=input_shape, name='content_input')
+    style_input = Input(shape=input_shape, name='style_input')
+    x = concatenate([content_input, style_input], axis=0)
+    
+    vgg = VGG19(include_top=False, input_tensor=x)
+    
+    swapped = Lambda(wct_style_swap, output_shape=(64, 64, 256))(vgg.layers[-13].output)
+    
+    encode_layer = Model([content_input, style_input], swapped)
+    
+    for layer in encode_layer.layers[:]:
+        layer.trainable = False
+    
+    encode_layer.compile(optimizer='adam', loss='mse')
+    return encode_layer
 
+# "Style-swap": VGG19 3-3 residual convolutional
+def InverseNet_3_3_res(feature, tv_weight=1e-6):
+    ## feature = shape of content concatenate with style
+    
+    swapped_input = Input(shape=feature, name='swapped_input')
+    
+    x = conv_in_relu(256, 3, 3, stride=(1,1))(swapped_input)
+    x = res_in_conv(256, 3, 3, stride=(1,1))(x)
+    x = res_in_conv(256, 5, 5, stride=(1,1))(x)
+    x = res_in_conv(256, 7, 7, stride=(1,1))(x)
+    x = UpSampling2D()(x)
+    x = conv_in_relu(128, 5, 5, stride=(1,1))(x)
+    #x = conv_in_relu(128, 3, 3, stride=(1,1))(x)
+    x = UpSampling2D()(x)
+    x = conv_in_relu(64, 5, 5, stride=(1,1))(x)
+    x = conv_in_relu(64, 3, 3, stride=(1,1))(x)
+    
+    inverse_net_output = Conv2D(3, (3, 3), padding='same', name='inverse_net_output',activation="tanh")(x)
+    
+    x = TanhNormalize()(inverse_net_output)
 
+              
+    model = Model(inputs=[swapped_input], outputs=x)
+   
+    add_total_variation_loss(model.layers[-1], tv_weight)
+      
+    return model
+
+# "Fast-style":
 def image_transform_net(img_width,img_height,tv_weight=1):
     x = Input(shape=(img_width,img_height,3))
     a = InputNormalize()(x)
@@ -34,8 +83,7 @@ def image_transform_net(img_width,img_height,tv_weight=1):
     return model 
 
 
-
-
+# "Fast-style":
 def loss_net(x_in, trux_x_in,width, height,style_image_path,content_weight,style_weight):
     # Append the initial input to the FastNet input to the VGG inputs
     x = concatenate([x_in, trux_x_in], axis=0)

@@ -4,8 +4,6 @@ from keras.optimizers import Adam, SGD,RMSprop
 from keras.preprocessing.image import ImageDataGenerator
 from keras import backend as K
 from scipy.misc import imsave
-from model.layers import VGGNormalize,ReflectionPadding2D,Denormalize,conv_bn_relu,res_conv,dconv_bn_nolinear
-from model.loss import dummy_loss,StyleReconstructionRegularizer,FeatureReconstructionRegularizer,TVRegularizer
 
 import time
 import numpy as np
@@ -14,7 +12,9 @@ import argparse
 from keras.callbacks import TensorBoard
 from scipy import ndimage
 
-import model.nets as nets
+from models.src.layers import VGGNormalize,ReflectionPadding2D,Denormalize,conv_bn_relu,res_conv,dconv_bn_nolinear
+from models.src.loss import dummy_loss,StyleReconstructionRegularizer,FeatureReconstructionRegularizer,TVRegularizer
+import models.src.nets as nets
 
 
 

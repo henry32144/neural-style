@@ -5,4 +5,5 @@ __pycache__
 .ipynb_checkpoints/research-checkpoint.ipynb
 .ipynb_checkpoints/*
 .ipynb_checkpoints
-model/pretrained/*
+models/fast_style_transfer/pretrained/*
+models/style_swap/pretrained/*

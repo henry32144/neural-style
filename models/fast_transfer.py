@@ -1,7 +1,5 @@
 from keras.layers import Input, merge
 from keras.models import Model,Sequential
-from model.layers import VGGNormalize,ReflectionPadding2D,Denormalize,conv_bn_relu,res_conv,dconv_bn_nolinear
-from model.loss import dummy_loss,StyleReconstructionRegularizer,FeatureReconstructionRegularizer,TVRegularizer
 from keras.optimizers import Adam, SGD,Nadam,Adadelta
 from keras.preprocessing.image import ImageDataGenerator
 from keras import backend as K
@@ -16,9 +14,12 @@ import gc
 from skimage import color, exposure, transform
 from scipy import ndimage
 from scipy.ndimage.filters import median_filter
-from model.img_util import preprocess_image, preprocess_image_for_generating, preprocess_reflect_image, crop_image, preprocess_test
 from io import BytesIO
-import model.nets as nets
+from models.src.layers import VGGNormalize,ReflectionPadding2D,Denormalize,conv_bn_relu,res_conv,dconv_bn_nolinear
+from models.src.loss import dummy_loss,StyleReconstructionRegularizer,FeatureReconstructionRegularizer,TVRegularizer
+from models.src.img_util import preprocess_reflect_image, crop_image
+
+import models.src.nets as nets
 
 
 # from 6o6o's fork. https://github.com/6o6o/chainer-fast-neuralstyle/blob/master/generate.py
@@ -92,7 +93,7 @@ def transfer(base_image, syle_image_path, original_color=0, blend=0, media_filte
 
     model.compile(Adam(),  dummy_loss)  # Dummy loss since we are learning from regularizes
 
-    model.load_weights("./model/pretrained/"+style+'_weights.h5',by_name=False)
+    model.load_weights("./models/fast_style_transfer/pretrained/"+style+'_weights.h5',by_name=False)
     print('Model loaded')
     
     t1 = time.time()
