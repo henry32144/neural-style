@@ -2,9 +2,18 @@
 
 <!-- Navbar Button -->
 {% block topNavbar %}
-<a class="nav-link to-top" href="#">Home
-	<span class="sr-only">(current)</span>
-</a>
+<li>
+    <a class="nav-link" href="/">Home</a>
+</li>
+<li>
+    <a class="nav-link" href="/faststyle">Faststyle</a>
+</li>
+<li>
+    <a class="nav-link to-top activate" href="#">Styleswap</a>
+</li>
+<li>
+    <a class="nav-link" href="/maskstyle">Maskstyle</a>
+</li>
 {% endblock topNavbar %}
 
 {% block modal %}
@@ -50,14 +59,14 @@
 			<div class="carousel-item" style="background-image: url('./static/img/landing/styleswap_autumn.jpg')">
 				<div class="carousel-caption d-none d-md-block">
 					<h3>Blue Ridge Parkway & Water</h3>
-					<p>Photoed searched from internet.</p>
+					<p>Photo searched from internet.</p>
 				</div>
 			</div>
 			<!-- Slide Three - Set the background image for this slide in the line below -->
 			<div class="carousel-item" style="background-image: url('./static/img/landing/styleswap_street.jpg')">
 				<div class="carousel-caption d-none d-md-block">
 					<h3>Street view & Composition X</h3>
-					<p>Photoed searched from internet.</p>
+					<p>Photo searched from internet.</p>
 				</div>
 			</div>
 		</div>
@@ -384,6 +393,7 @@
 		// 	$("#selected-style").text("Style: " + selectedId);
 		// 	selectedStyleImage = selectedId;
 		// });
+
 
 		// To top button
 		$(".to-top").click(function() {

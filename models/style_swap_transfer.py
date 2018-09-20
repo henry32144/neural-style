@@ -66,12 +66,12 @@ def load_weights(model,file_path):
     print('Pretrained Model weights loaded.')
 
 
-def transfer(base_image, syle_image, original_color=0, blend=0, media_filter=3):
+def transfer(base_image, syle_image, original_color=0, blend_alpha=0, media_filter=3):
     input_file = base_image
     style_file = syle_image
     
     original_color = original_color
-    blend_alpha = blend
+    blend_alpha = blend_alpha
     media_filter = media_filter
     aspect_ratio = 1
     

@@ -2,9 +2,18 @@
 
 <!-- Navbar Button -->
 {% block topNavbar %}
-<a class="nav-link to-top" href="#">Home
-	<span class="sr-only">(current)</span>
-</a>
+<li>
+    <a class="nav-link" href="/">Home</a>
+</li>
+<li>
+    <a class="nav-link to-top activate" href="#">Faststyle</a>
+</li>
+<li>
+    <a class="nav-link" href="/styleswap">Styleswap</a>
+</li>
+<li>
+    <a class="nav-link" href="/maskstyle">Maskstyle</a>
+</li>
 {% endblock topNavbar %}
 
 {% block modal %}
@@ -419,6 +428,7 @@
 		// });
 
 		// Listen to the style image selected event
+
 
 		$(".style-image").click(function() {
 			$(".style-image").removeClass("item-onclick");

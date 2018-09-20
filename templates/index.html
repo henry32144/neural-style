@@ -2,9 +2,18 @@
 
 <!-- Navbar Button -->
 {% block topNavbar %}
-<a class="nav-link to-top" href="#">Home
-	<span class="sr-only">(current)</span>
-</a>
+<li>
+    <a class="nav-link to-top active" href="/">Home</a>
+</li>
+<li>
+    <a class="nav-link" href="/faststyle">Faststyle</a>
+</li>
+<li>
+    <a class="nav-link" href="/styleswap">Styleswap</a>
+</li>
+<li>
+    <a class="nav-link" href="/maskstyle">Maskstyle</a>
+</li>
 {% endblock topNavbar %}
 
 {% block modal %}
@@ -154,8 +163,10 @@
 
 <script type="text/javascript">
 	"use strict";
+
 	// Load this part while the DOM is ready
 	$(function() {
+
 		// To top button
 		$(".to-top").click(function() {
 			$('html, body').animate({

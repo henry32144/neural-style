@@ -7,3 +7,4 @@ __pycache__
 .ipynb_checkpoints
 models/fast_style_transfer/pretrained/*
 models/style_swap/pretrained/*
+models/mask_style_transfer/pretrained/*

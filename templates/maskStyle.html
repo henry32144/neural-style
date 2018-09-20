@@ -2,9 +2,18 @@
 
 <!-- Navbar Button -->
 {% block topNavbar %}
-<a class="nav-link to-top" href="#">Home
-	<span class="sr-only">(current)</span>
-</a>
+<li>
+    <a class="nav-link" href="/">Home</a>
+</li>
+<li>
+    <a class="nav-link" href="/faststyle">Faststyle</a>
+</li>
+<li>
+    <a class="nav-link" href="/styleswap">Styleswap</a>
+</li>
+<li>
+    <a class="nav-link to-top activate" href="#">Maskstyle</a>
+</li>
 {% endblock topNavbar %}
 
 {% block modal %}
@@ -40,24 +49,24 @@
 		</ol>
 		<div class="carousel-inner" role="listbox">
 			<!-- Slide One - Set the background image for this slide in the line below -->
-			<div class="carousel-item active" style="background-image: url('./static/img/landing/la_muse_lucechapel.png')">
+			<div class="carousel-item active" style="background-image: url('./static/img/landing/maskstyle_car.png')">
 				<div class="carousel-caption d-none d-md-block">
-					<h3>Luce Chapel & La Muse</h3>
-					<p>La Muse by Pablo Picasso</p>
+					<h3>Car & 神奈川沖浪裏 & Udnie</h3>
+					<p>Photo searched from internet.</p>
 				</div>
 			</div>
 			<!-- Slide Two - Set the background image for this slide in the line below -->
-			<div class="carousel-item" style="background-image: url('./static/img/landing/udnie_lucechapel.png')">
+			<div class="carousel-item" style="background-image: url('./static/img/landing/maskstyle_mi5.png')">
 				<div class="carousel-caption d-none d-md-block">
-					<h3>Luce Chapel & Udnie</h3>
-					<p>Udnie by Francis Picabia.</p>
+					<h3>MI5 & La muse & Udnie</h3>
+					<p>Photo searched from internet.</p>
 				</div>
 			</div>
 			<!-- Slide Three - Set the background image for this slide in the line below -->
-			<div class="carousel-item" style="background-image: url('./static/img/landing/wave_crop_lucechapel.png')">
+			<div class="carousel-item" style="background-image: url('./static/img/landing/maskstyle_sheep.png')">
 				<div class="carousel-caption d-none d-md-block">
-					<h3>Luce Chapel & 神奈川沖浪裏</h3>
-					<p>神奈川沖浪裏 by 葛飾 北斎</p>
+					<h3>Sheeps & 清明上河圖 & Des glaneuses</h3>
+					<p>Photo searched from internet.</p>
 				</div>
 			</div>
 		</div>
@@ -80,7 +89,7 @@
 		<div class="row">
 			<div class="col-md-12 text-center">
 				<h2 class="section-heading text-uppercase">Introduce</h2>
-				<h3 class="section-subheading text-muted">Steps to create a stylish image.</h3>
+				<h3 class="section-subheading text-muted">Steps to create a special stylish image.</h3>
 			</div>
 		</div>
 		<section>
@@ -88,7 +97,7 @@
 		    <div class="row align-items-center">
 		      <div class="col-lg-6 order-lg-2">
 		        <div class="p-5">
-		          <img class="img-fluid rounded-circle" src="{{url_for('static', filename='img/introduce/intro_content.jpg')}}" alt="Your image">
+		          <img class="img-fluid rounded-circle" src="{{url_for('static', filename='img/introduce/ms_intro_content.jpg')}}" alt="Your image">
 		        </div>
 		      </div>
 		      <div class="col-lg-6 order-lg-1">
@@ -106,13 +115,13 @@
 		    <div class="row align-items-center">
 		      <div class="col-lg-6">
 		        <div class="p-5">
-		          <img class="img-fluid rounded-circle" src="{{url_for('static', filename='img/introduce/intro_udnie.jpg')}}" alt="Style image">
+		          <img class="img-fluid rounded-circle" src="{{url_for('static', filename='img/introduce/ms_intro_style.jpg')}}" alt="Style image">
 		        </div>
 		      </div>
 		      <div class="col-lg-6">
 		        <div class="p-5">
-		          <h2>Step 2: Choose a style</h2>
-		          <p class="h5">We have already prepared some amazing styles for you! Choose one you prefer.</p>
+		          <h2>Step 2: Choose two styles</h2>
+		          <p class="h5">Choose two styles you prefer. One will be apply to the object, and the other will be apply to the background.</p>
 		        </div>
 		      </div>
 		    </div>
@@ -124,13 +133,13 @@
 		    <div class="row align-items-center">
 		      <div class="col-lg-6 order-lg-2">
 		        <div class="p-5">
-		          <img class="img-fluid rounded-circle" src="{{url_for('static', filename='img/introduce/intro_result.jpg')}}" alt="Result image">
+		          <img class="img-fluid rounded-circle" src="{{url_for('static', filename='img/introduce/ms_intro_result.jpg')}}" alt="Result image">
 		        </div>
 		      </div>
 		      <div class="col-lg-6 order-lg-1">
 		        <div class="p-5">
 		          <h2>Step 3: Press GO!</h2>
-		          <p class="h5">As you submit, our model will combine the stylish image for you. Typically, the image will be displayed on the bottom of the website in a minute.</p>
+		          <p class="h5">As you submit, our model will combine the stylish image for you. In the case that model did not recognize anything, the result will be same as the output using fast style.</p>
 		        </div>
 		      </div>
 		    </div>
@@ -153,7 +162,7 @@
 <main class="container mt-3">
 	<div class="mt-3 row">
 		<!--  Form upload section -->
-		<div class="col-md-6 mt-3">
+		<div class="col-md-6 mt-3 mx-auto">
 			<div class="text-center mb-3">
 				<h4 class="text-muted">Upload your image</h4>
 			</div>
@@ -164,43 +173,46 @@
 				</form>
 			</div>
 		</div>
-		<!-- Style image section -->
-		<section class="style-image-section col-md-6 mt-3">
-			<h4 class="text-muted text-center mb-3">Choose a style</h4>
+	</div>
+	<!-- Style image section -->
+	<div class="mt-5 row">
+		<!-- Foreground style -->
+		<section class="style-image-section col-md-6">
+			<h4 class="text-muted text-center mb-3">Choose foreground style</h4>
 			<div class="card card-default">
 				<div class="card-header">Styles</div>
 				<div class="container-fluid card-body" style="max-height: 450px;overflow-y: scroll;">
 					<div class="row mt-2">
 						<div class="col-lg-4 col-md-4 col-sm-4">
 							<div id="mirror" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/mirror.jpg')}}" alt="Mirror">
+								<img class="img-fluid img-thumbnail fore-style-image m-1" src="{{url_for('static', filename='img/styles/mirror.jpg')}}" alt="Mirror">
 							</div>
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-4">
 							<div id="udnie" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/udnie.jpg')}}" alt="Udnie">
+								<img class="img-fluid img-thumbnail fore-style-image m-1" src="{{url_for('static', filename='img/styles/udnie.jpg')}}" alt="Udnie">
 							</div>
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-4">
 							<div id="la_muse" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/la_muse.jpg')}}" alt="La_muse">
+								<img class="img-fluid img-thumbnail fore-style-image m-1" src="{{url_for('static', filename='img/styles/la_muse.jpg')}}" alt="La_muse">
 							</div>
 						</div>
 					</div>
 					<div class="row mt-2">
 						<div class="col-lg-4 col-md-4 col-sm-4">
 							<div id="chinese" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/chinese.jpg')}}" alt="Chinese">
+								<img class="img-fluid img-thumbnail fore-style-image m-1" src="{{url_for('static', filename='img/styles/chinese.jpg')}}" alt="Chinese">
 							</div>
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-4">
 							<div id="mountain_water" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/mountain_water.jpg')}}" alt="MountainWater">
+								<img class="img-fluid img-thumbnail fore-style-image m-1" src="{{url_for('static', filename='img/styles/mountain_water.jpg')}}" alt="MountainWater">
 							</div>
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-4">
 							<div id="zhangdaqian" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/zhangdaqian.jpg')}}" alt="Zhangdaqian">
+								<img class="img-fluid img-thumbnail fore-style-image m-1" src="{{url_for('static', filename='img/styles/zhangdaqian.jpg')}}" alt="Zhangdaqian">
 							</div>
 						</div>    
 					</div>
@@ -208,24 +220,24 @@
 					<div class="row mt-2">
 						<div class="col-lg-4 col-md-4 col-sm-4">
 							<div id="des_glaneuses" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/des_glaneuses.jpg')}}" alt="Des_glaneuses">
+								<img class="img-fluid img-thumbnail fore-style-image m-1" src="{{url_for('static', filename='img/styles/des_glaneuses.jpg')}}" alt="Des_glaneuses">
 							</div>
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-4">
 							<div id="wave_crop" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/wave_crop.jpg')}}" alt="Wave_crop">
+								<img class="img-fluid img-thumbnail fore-style-image m-1" src="{{url_for('static', filename='img/styles/wave_crop.jpg')}}" alt="Wave_crop">
 							</div>
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-4">
 							<div id="starry_night" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/starry_night.jpg')}}" alt="Starry_night">
+								<img class="img-fluid img-thumbnail fore-style-image m-1" src="{{url_for('static', filename='img/styles/starry_night.jpg')}}" alt="Starry_night">
 							</div>
 						</div>
 					</div>
 					<div class="row mt-2">
 						<div class="col-lg-4 col-md-4 col-sm-4">
 							<div id="monalisa" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/monalisa.jpg')}}" alt="Monalisa">
+								<img class="img-fluid img-thumbnail fore-style-image m-1" src="{{url_for('static', filename='img/styles/monalisa.jpg')}}" alt="Monalisa">
 							</div>
 						</div>
 					</div>
@@ -233,12 +245,85 @@
 			</div>
 			<div class="row mt-3">
 				<div class="col-md-12 text-center">
-					<h4 class="text-muted" id="selected-style">Style: </h4>
+					<h4 class="text-muted" id="fore-selected-style">Foreground: </h4>
 				</div>
 			</div>
 		</section>
-		<HR>
+		<!-- Background style -->
+		<section class="style-image-section col-md-6">
+			<h4 class="text-muted text-center mb-3">Choose background style</h4>
+			<div class="card card-default">
+				<div class="card-header">Styles</div>
+				<div class="container-fluid card-body" style="max-height: 450px;overflow-y: scroll;">
+					<div class="row mt-2">
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="mirror" class="img-item">
+								<img class="img-fluid img-thumbnail back-style-image m-1" src="{{url_for('static', filename='img/styles/mirror.jpg')}}" alt="Mirror">
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="udnie" class="img-item">
+								<img class="img-fluid img-thumbnail back-style-image m-1" src="{{url_for('static', filename='img/styles/udnie.jpg')}}" alt="Udnie">
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="la_muse" class="img-item">
+								<img class="img-fluid img-thumbnail back-style-image m-1" src="{{url_for('static', filename='img/styles/la_muse.jpg')}}" alt="La_muse">
+							</div>
+						</div>
+					</div>
+					<div class="row mt-2">
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="chinese" class="img-item">
+								<img class="img-fluid img-thumbnail back-style-image m-1" src="{{url_for('static', filename='img/styles/chinese.jpg')}}" alt="Chinese">
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="mountain_water" class="img-item">
+								<img class="img-fluid img-thumbnail back-style-image m-1" src="{{url_for('static', filename='img/styles/mountain_water.jpg')}}" alt="MountainWater">
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="zhangdaqian" class="img-item">
+								<img class="img-fluid img-thumbnail back-style-image m-1" src="{{url_for('static', filename='img/styles/zhangdaqian.jpg')}}" alt="Zhangdaqian">
+							</div>
+						</div>    
+					</div>
+
+					<div class="row mt-2">
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="des_glaneuses" class="img-item">
+								<img class="img-fluid img-thumbnail back-style-image m-1" src="{{url_for('static', filename='img/styles/des_glaneuses.jpg')}}" alt="Des_glaneuses">
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="wave_crop" class="img-item">
+								<img class="img-fluid img-thumbnail back-style-image m-1" src="{{url_for('static', filename='img/styles/wave_crop.jpg')}}" alt="Wave_crop">
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="starry_night" class="img-item">
+								<img class="img-fluid img-thumbnail back-style-image m-1" src="{{url_for('static', filename='img/styles/starry_night.jpg')}}" alt="Starry_night">
+							</div>
+						</div>
+					</div>
+					<div class="row mt-2">
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="monalisa" class="img-item">
+								<img class="img-fluid img-thumbnail back-style-image m-1" src="{{url_for('static', filename='img/styles/monalisa.jpg')}}" alt="Monalisa">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row mt-3">
+				<div class="col-md-12 text-center">
+					<h4 class="text-muted" id="back-selected-style">Background: </h4>
+				</div>
+			</div>
+		</section>
 	</div>
+	<HR>
 	<div class="container mt-3">
 		<div class="d-flex justify-content-center">
 		  <div class="row">
@@ -270,9 +355,10 @@
 
 <script type="text/javascript">
 	"use strict";
-	var selectedStyleImage;
+	var selectedForeground;
+	var selectedBackground;
 	var contentNotUploadedText = "Please upload a picture";
-	var styleNotSelectedText = "Please select a style";
+	var styleNotSelectedText = "Please select two styles";
 
 
 	// Set the information text of modal and display it
@@ -286,13 +372,14 @@
 		// Prevent default form behavior
 		event.preventDefault();
 		// Check the file is not empty and a style has been selected
-		if($("#img-input").fileinput('getFileStack')[0] != undefined && selectedStyleImage != undefined) {
+		if($("#img-input").fileinput('getFileStack')[0] != undefined && selectedForeground != undefined && selectedBackground != undefined) {
 			var form = new FormData();
 			var files = $("#img-input").fileinput('getFileStack');
 
 			form.append("file", files[0]);
         	// NEED TO CHANGE IN FUTURE
-        	form.append("style", selectedStyleImage);
+        	form.append("forestyle", selectedForeground);
+        	form.append("backstyle", selectedBackground);
         	sendData(form);
 			// Show the result section
 			$(".result-section").toggleClass("d-none", false);
@@ -304,7 +391,7 @@
 				scrollTop: $(".result-section").offset().top
 			            }, 1000, //Millisecond
 			            "easeInQuint");
-		} else if(selectedStyleImage == undefined) {
+		} else if(selectedForeground == undefined || selectedBackground != undefined) {
 			showInfoModal(styleNotSelectedText);
 		} else {
 			showInfoModal(contentNotUploadedText);
@@ -348,9 +435,8 @@
 		    error: function(error) {
 		    	console.log("fail");
 		    	console.log(error);
-		    	alert("fail");
-		    	alert(error.responseText);
 		    	displayError("Fail");
+		    	showInfoModal(error.responseText);
 		    }
 		});
 	};
@@ -420,12 +506,21 @@
 
 		// Listen to the style image selected event
 
-		$(".style-image").click(function() {
-			$(".style-image").removeClass("item-onclick");
+
+		$(".fore-style-image").click(function() {
+			$(".fore-style-image").removeClass("item-onclick");
 			$(this).addClass("item-onclick");
 			var selectedId = $(this).parent(".img-item").attr('id');
-			$("#selected-style").text("Style: " + selectedId);
-			selectedStyleImage = selectedId;
+			$("#fore-selected-style").text("Foreground: " + selectedId);
+			selectedForeground = selectedId;
+		});
+
+		$(".back-style-image").click(function() {
+			$(".back-style-image").removeClass("back-item-onclick");
+			$(this).addClass("back-item-onclick");
+			var selectedId = $(this).parent(".img-item").attr('id');
+			$("#back-selected-style").text("Background: " + selectedId);
+			selectedBackground = selectedId;
 		});
 
 		// To top button
