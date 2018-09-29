@@ -89,7 +89,7 @@ def transfer(base_image, syle_image, original_color=0, blend_alpha=0, media_filt
     print('Model loaded')
     
     inverse_net.compile(optimizer="adam", loss='mse')
-    inverse_net.summary()
+
     image_feature = encode_net.predict([content_processed, style_processed])
 
 

@@ -119,7 +119,10 @@ def style_swap_preprocess_image(image_path, IMG_WIDTH=500, IMG_HEIGHT=500):
 
 
 def preprocess_reflect_image(image_path, size_multiple=4):
-    img = imread(image_path, mode="RGB")  # Prevents crashes due to PNG images (ARGB)
+    if(type(image_path) is not np.ndarray):    
+        img = imread(image_path, mode="RGB")  # Prevents crashes due to PNG images (ARGB)
+    else:
+        img = image_path
     img = check_resize_img(img) # check image size
     org_w = img.shape[0]
     org_h = img.shape[1]

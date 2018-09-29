@@ -4,6 +4,8 @@ from flask import Flask, render_template, request, g , jsonify
 from flask import send_from_directory, redirect, url_for
 import models.fast_transfer as fast_transfer
 import models.style_swap_transfer as style_swap_transfer
+import models.mask_style_transfer as mask_style_transfer
+
 import base64, json, sys
 import utils
 import gc
@@ -95,6 +97,39 @@ def styleswap_upload_file():
         else:
             json_data = json.dumps({'error':'Style image format not supported'})
             return json_data
+    else:
+        json_data = json.dumps({'error':'Content image format not supported'})
+        return json_data
+
+## Deal with upload request
+@app.route('/maskstyle_upload_image', methods=['POST'])
+def maskstyle_upload_file():
+    ## Get message from the form
+    file = request.files['file']
+    forestyle = request.form['forestyle']
+    backstyle = request.form['backstyle']
+
+    forestyle_image_path = None
+    backstyle_image_path = None
+    ## Check style
+    forestyle_image_path = utils.get_style_path(forestyle)
+    backstyle_image_path = utils.get_style_path(backstyle)
+    
+    if not forestyle_image_path or not backstyle_image_path:
+        json_data = json.dumps({'error':'No style image found'})
+        return json_data
+
+    ## If file is valid
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        ## Start transfer
+        data = mask_style_transfer.transfer(file, forestyle_image_path, backstyle_image_path)
+        ## encode image data to base64
+        data = base64.b64encode(data).decode('UTF-8')
+        ## put data into json
+        gc.collect()
+        json_data = json.dumps({'image':data})
+        return json_data
     else:
         json_data = json.dumps({'error':'Content image format not supported'})
         return json_data
