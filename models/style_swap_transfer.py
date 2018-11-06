@@ -10,6 +10,7 @@ import argparse
 import h5py
 import tensorflow as tf
 import gc
+import models.file_path as file_path
 
 from skimage import color, exposure, transform
 from scipy import ndimage
@@ -18,7 +19,8 @@ from io import BytesIO
 from models.src.loss import dummy_loss
 from models.src.img_util import style_swap_preprocess_image, crop_image
 
-from models.src.nets import InverseNet_3_3_res, build_encode_net
+from models.src.nets import InverseNet_3_1, build_encode_net_with_swap_3_1
+
 
 # from 6o6o's fork. https://github.com/6o6o/chainer-fast-neuralstyle/blob/master/generate.py
 def original_colors(original, stylized,original_color):
@@ -81,11 +83,11 @@ def transfer(base_image, syle_image, original_color=0, blend_alpha=0, media_filt
     img_width = img_height = content_processed.shape[1]
     print(img_width, img_height)
     
-    encode_net = build_encode_net((img_width, img_height, 3))
+    encode_net = build_encode_net_with_swap_3_1((img_width, img_height, 3))
     print('encode_net')
     
-    inverse_net = InverseNet_3_3_res((int(img_width/4) ,int(img_height/4) ,256))
-    inverse_net.load_weights("./models/style_swap/pretrained/inverse_net_13_res_nor.h5", by_name=True)
+    inverse_net = InverseNet_3_1((int(img_width/4) ,int(img_height/4) ,256))
+    inverse_net.load_weights(file_path.MODELS_PATH + "/style_swap/pretrained/inverse_net_vgg19.h5", by_name=True)
     print('Model loaded')
     
     inverse_net.compile(optimizer="adam", loss='mse')

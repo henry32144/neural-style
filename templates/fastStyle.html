@@ -14,6 +14,9 @@
 <li>
     <a class="nav-link" href="/maskstyle">Maskstyle</a>
 </li>
+<li>
+    <a class="nav-link" href="/about">About</a>
+</li>
 {% endblock topNavbar %}
 
 {% block modal %}
@@ -49,21 +52,21 @@
 		</ol>
 		<div class="carousel-inner" role="listbox">
 			<!-- Slide One - Set the background image for this slide in the line below -->
-			<div class="carousel-item active" style="background-image: url('./static/img/landing/la_muse_lucechapel.png')">
+			<div class="carousel-item active" style="background-image: url('./static/img/landing/la_muse_lucechapel.jpg')">
 				<div class="carousel-caption d-none d-md-block">
 					<h3>Luce Chapel & La Muse</h3>
 					<p>La Muse by Pablo Picasso</p>
 				</div>
 			</div>
 			<!-- Slide Two - Set the background image for this slide in the line below -->
-			<div class="carousel-item" style="background-image: url('./static/img/landing/udnie_lucechapel.png')">
+			<div class="carousel-item" style="background-image: url('./static/img/landing/udnie_lucechapel.jpg')">
 				<div class="carousel-caption d-none d-md-block">
 					<h3>Luce Chapel & Udnie</h3>
 					<p>Udnie by Francis Picabia.</p>
 				</div>
 			</div>
 			<!-- Slide Three - Set the background image for this slide in the line below -->
-			<div class="carousel-item" style="background-image: url('./static/img/landing/wave_crop_lucechapel.png')">
+			<div class="carousel-item" style="background-image: url('./static/img/landing/wave_crop_lucechapel.jpg')">
 				<div class="carousel-caption d-none d-md-block">
 					<h3>Luce Chapel & 神奈川沖浪裏</h3>
 					<p>神奈川沖浪裏 by 葛飾 北斎</p>
@@ -88,7 +91,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12 text-center">
-				<h2 class="section-heading text-uppercase">Introduce</h2>
+				<h2 class="section-heading text-uppercase">Fast Style</h2>
 				<h3 class="section-subheading text-muted">Steps to create a stylish image.</h3>
 			</div>
 		</div>
@@ -182,34 +185,34 @@
 					<div class="row mt-2">
 						<div class="col-lg-4 col-md-4 col-sm-4">
 							<div id="mirror" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/mirror.jpg')}}" alt="Mirror">
+								<img class="img-fluid img-thumbnail style-image m-1" src="{{url_for('static', filename='img/styles/mirror.jpg')}}" alt="Mirror">
 							</div>
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-4">
 							<div id="udnie" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/udnie.jpg')}}" alt="Udnie">
+								<img class="img-fluid img-thumbnail style-image m-1" src="{{url_for('static', filename='img/styles/udnie.jpg')}}" alt="Udnie">
 							</div>
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-4">
 							<div id="la_muse" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/la_muse.jpg')}}" alt="La_muse">
+								<img class="img-fluid img-thumbnail style-image m-1" src="{{url_for('static', filename='img/styles/la_muse.jpg')}}" alt="La_muse">
 							</div>
 						</div>
 					</div>
 					<div class="row mt-2">
 						<div class="col-lg-4 col-md-4 col-sm-4">
 							<div id="chinese" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/chinese.jpg')}}" alt="Chinese">
+								<img class="img-fluid img-thumbnail style-image m-1" src="{{url_for('static', filename='img/styles/chinese.jpg')}}" alt="Chinese">
 							</div>
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-4">
 							<div id="mountain_water" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/mountain_water.jpg')}}" alt="MountainWater">
+								<img class="img-fluid img-thumbnail style-image m-1" src="{{url_for('static', filename='img/styles/mountain_water.jpg')}}" alt="MountainWater">
 							</div>
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-4">
-							<div id="zhangdaqian" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/zhangdaqian.jpg')}}" alt="Zhangdaqian">
+							<div id="zhangdachien" class="img-item">
+								<img class="img-fluid img-thumbnail style-image m-1" src="{{url_for('static', filename='img/styles/zhangdachien.jpg')}}" alt="Zhangdachien">
 							</div>
 						</div>    
 					</div>
@@ -217,24 +220,85 @@
 					<div class="row mt-2">
 						<div class="col-lg-4 col-md-4 col-sm-4">
 							<div id="des_glaneuses" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/des_glaneuses.jpg')}}" alt="Des_glaneuses">
+								<img class="img-fluid img-thumbnail style-image m-1" src="{{url_for('static', filename='img/styles/des_glaneuses.jpg')}}" alt="Des_glaneuses">
 							</div>
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-4">
 							<div id="wave_crop" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/wave_crop.jpg')}}" alt="Wave_crop">
+								<img class="img-fluid img-thumbnail style-image m-1" src="{{url_for('static', filename='img/styles/wave_crop.jpg')}}" alt="Wave_crop">
 							</div>
 						</div>
 						<div class="col-lg-4 col-md-4 col-sm-4">
 							<div id="starry_night" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/starry_night.jpg')}}" alt="Starry_night">
+								<img class="img-fluid img-thumbnail style-image m-1" src="{{url_for('static', filename='img/styles/starry_night.jpg')}}" alt="Starry_night">
 							</div>
 						</div>
 					</div>
 					<div class="row mt-2">
 						<div class="col-lg-4 col-md-4 col-sm-4">
 							<div id="monalisa" class="img-item">
-								<img class="img-fluid rounded style-image m-1" src="{{url_for('static', filename='img/styles/monalisa.jpg')}}" alt="Monalisa">
+								<img class="img-fluid img-thumbnail style-image m-1" src="{{url_for('static', filename='img/styles/monalisa.jpg')}}" alt="Monalisa">
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="picassoself" class="img-item">
+								<img class="img-fluid img-thumbnail style-image m-1" src="{{url_for('static', filename='img/styles/picassoself.jpg')}}" alt="Picassoself">
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="jingdo" class="img-item">
+								<img class="img-fluid img-thumbnail style-image m-1" src="{{url_for('static', filename='img/styles/jingdo.jpg')}}" alt="Jingdo">
+							</div>
+						</div>
+					</div>
+					<div class="row mt-2">
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="aurora" class="img-item">
+								<img class="img-fluid img-thumbnail style-image m-1" src="{{url_for('static', filename='img/styles/aurora.jpg')}}" alt="Aurora">
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="colorful" class="img-item">
+								<img class="img-fluid img-thumbnail style-image m-1" src="{{url_for('static', filename='img/styles/colorful.jpg')}}" alt="Colorful">
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="crystal" class="img-item">
+								<img class="img-fluid img-thumbnail style-image m-1" src="{{url_for('static', filename='img/styles/crystal.jpg')}}" alt="Crystal">
+							</div>
+						</div>
+					</div>
+					<div class="row mt-2">
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="fire" class="img-item">
+								<img class="img-fluid img-thumbnail style-image m-1" src="{{url_for('static', filename='img/styles/fire.jpg')}}" alt="Fire">
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="tiger" class="img-item">
+								<img class="img-fluid img-thumbnail style-image m-1" src="{{url_for('static', filename='img/styles/tiger.jpg')}}" alt="Tiger">
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="ybfire" class="img-item">
+								<img class="img-fluid img-thumbnail style-image m-1" src="{{url_for('static', filename='img/styles/ybfire.jpg')}}" alt="Ybfire">
+							</div>
+						</div>
+					</div>
+					<div class="row mt-2">
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="sky" class="img-item">
+								<img class="img-fluid img-thumbnail style-image m-1" src="{{url_for('static', filename='img/styles/sky.jpg')}}" alt="Sky">
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="water" class="img-item">
+								<img class="img-fluid img-thumbnail style-image m-1" src="{{url_for('static', filename='img/styles/water.jpg')}}" alt="Water">
+							</div>
+						</div>
+						<div class="col-lg-4 col-md-4 col-sm-4">
+							<div id="chingmin" class="img-item">
+								<img class="img-fluid img-thumbnail style-image m-1" src="{{url_for('static', filename='img/styles/chingmin.jpg')}}" alt="Chingmin">
 							</div>
 						</div>
 					</div>
@@ -264,7 +328,7 @@
 			<HR>
 			<h4 class="text-muted text-center mt-5" id="result-state">Wait a minute</h4>
 			<div class="loader text-center mt-5 mx-auto"></div>
-			<img id="img-output" class="img-fluid d-none mx-auto" src="" alt="your image" />
+			<img id="img-output" class="img-fluid d-none mx-auto" src="" alt="after image" />
 		</div>        
 	</div>
 </section>
@@ -321,20 +385,20 @@
 	}
 
 	// Read the image user choosed to upload
-	function readURL(input) {
-		if (input.files && input.files[0]) {
-			var reader = new FileReader();
-			reader.onload = function(e) {
-				$("#img-preview").css("visibility", "visible");
-				$("#img-preview").attr("src", e.target.result);
-			}
-			reader.readAsDataURL(input.files[0]);
-		}
-	}
+	// function readURL(input) {
+	// 	if (input.fileinput('getFileStack')[0]) {
+	// 		var reader = new FileReader();
+	// 		reader.onload = function(e) {
+	// 			$("#img-origin").css("visibility", "visible");
+	// 			$("#img-origin").attr("src", e.target.result);
+	// 			$(window).trigger("resize.twentytwenty");
+	// 		}
+	// 		reader.readAsDataURL(input.fileinput('getFileStack')[0]);
+	// 	}
+	// }
 
 	// Submit form data
 	function sendData(formdata) {
-		alert('send data');
 		$.ajax({
 			url: "/upload_image",
 			data: formdata,
@@ -357,9 +421,8 @@
 		    error: function(error) {
 		    	console.log("fail");
 		    	console.log(error);
-		    	alert("fail");
-		    	alert(error.responseText);
 		    	displayError("Fail");
+		    	showInfoModal(error.responseText);
 		    }
 		});
 	};
@@ -377,6 +440,7 @@
 		$("#img-output").attr("src","data:image/jpeg;base64," + data["image"]);
 		$("#img-output").css("visibility", "visible");
 		toggleOutputImage(true);
+
 	}
 
 	// Set image output display or not
@@ -389,7 +453,6 @@
 			$("#img-output").toggleClass("d-block", false);
 			$("#img-output").toggleClass("d-none", true);
 		}
-
 	}
 
 	
@@ -428,7 +491,6 @@
 		// });
 
 		// Listen to the style image selected event
-
 
 		$(".style-image").click(function() {
 			$(".style-image").removeClass("item-onclick");

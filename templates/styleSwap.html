@@ -14,6 +14,9 @@
 <li>
     <a class="nav-link" href="/maskstyle">Maskstyle</a>
 </li>
+<li>
+    <a class="nav-link" href="/about">About</a>
+</li>
 {% endblock topNavbar %}
 
 {% block modal %}
@@ -88,7 +91,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12 text-center">
-				<h2 class="section-heading text-uppercase">Introduce</h2>
+				<h2 class="section-heading text-uppercase">Style Swap</h2>
 				<h3 class="section-subheading text-muted">Steps to create a stylish image.</h3>
 			</div>
 		</div>
@@ -272,7 +275,6 @@
 
 	// Submit form data
 	function sendData(formdata) {
-		alert('send data');
 		$.ajax({
 			url: "/styleswap_upload_image",
 			data: formdata,
@@ -295,9 +297,8 @@
 		    error: function(error) {
 		    	console.log("fail");
 		    	console.log(error);
-		    	alert("fail");
-		    	alert(error.responseText);
 		    	displayError("Fail");
+		    	showInfoModal(error.responseText);
 		    }
 		});
 	};

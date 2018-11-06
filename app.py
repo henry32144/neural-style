@@ -5,18 +5,19 @@ from flask import send_from_directory, redirect, url_for
 import models.fast_transfer as fast_transfer
 import models.style_swap_transfer as style_swap_transfer
 import models.mask_style_transfer as mask_style_transfer
-
+import multiprocessing as mp
 import base64, json, sys
-import utils
+import style_names
 import gc
 
 
 ## Declare allowed file extensions
 ALLOWED_EXTENSIONS = set(['png', 'jpg','jpeg' ,'gif', 'bmp', 'jpe', 'gif', 'svg'])
 
-
 ## Initialize flask app.
 app = Flask(__name__)
+
+lock = mp.Lock()
 
 ## This function check whether the file extension is allowed
 def allowed_file(filename):
@@ -45,6 +46,11 @@ def styleSwap():
     return render_template(
         'styleSwap.html')
 
+@app.route('/about')
+def about():
+    return render_template(
+        'about.html')
+
 ## Deal with upload request
 @app.route('/upload_image', methods=['POST'])
 def upload_file():
@@ -55,7 +61,7 @@ def upload_file():
     print(style, file=sys.stdout)
     style_image_path = None
     ## Check style
-    style_image_path = utils.get_style_path(style)
+    style_image_path = style_names.get_style_path(style)
     
     if not style_image_path:
         json_data = json.dumps({'error':'No style image found'})
@@ -64,9 +70,12 @@ def upload_file():
     ## If file is valid
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
+
         ## Start transfer
         #data = transfer.transfer(file, STYLE_IMG_PATH)
+        lock.acquire()
         data = fast_transfer.transfer(file, style_image_path)
+        lock.release()
         ## encode image data to base64
         data = base64.b64encode(data).decode('UTF-8')
         ## put data into json
@@ -86,8 +95,11 @@ def styleswap_upload_file():
     if file and allowed_file(file.filename):
         if style and allowed_file(style.filename):
             filename = secure_filename(file.filename)
+
             ## Start transfer
+            lock.acquire()
             data = style_swap_transfer.transfer(file, style)
+            lock.release()
             ## encode image data to base64
             data = base64.b64encode(data).decode('UTF-8')
             ## put data into json
@@ -112,8 +124,8 @@ def maskstyle_upload_file():
     forestyle_image_path = None
     backstyle_image_path = None
     ## Check style
-    forestyle_image_path = utils.get_style_path(forestyle)
-    backstyle_image_path = utils.get_style_path(backstyle)
+    forestyle_image_path = style_names.get_style_path(forestyle)
+    backstyle_image_path = style_names.get_style_path(backstyle)
     
     if not forestyle_image_path or not backstyle_image_path:
         json_data = json.dumps({'error':'No style image found'})
@@ -122,8 +134,11 @@ def maskstyle_upload_file():
     ## If file is valid
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
+
         ## Start transfer
+        lock.acquire()
         data = mask_style_transfer.transfer(file, forestyle_image_path, backstyle_image_path)
+        lock.release()
         ## encode image data to base64
         data = base64.b64encode(data).decode('UTF-8')
         ## put data into json

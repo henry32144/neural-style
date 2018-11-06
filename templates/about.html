@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+<!-- Navbar Button -->
+{% block topNavbar %}
+<li>
+    <a class="nav-link" href="/">Home</a>
+</li>
+<li>
+    <a class="nav-link" href="/faststyle">Faststyle</a>
+</li>
+<li>
+    <a class="nav-link" href="/styleswap">Styleswap</a>
+</li>
+<li>
+    <a class="nav-link" href="/maskstyle">Maskstyle</a>
+</li>
+<li>
+    <a class="nav-link to-top active" href="#">About</a>
+</li>
+{% endblock topNavbar %}
+
+{% block modal %}
+<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="infoModalLabel">Woops!</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      	<p class="h4" id="infoModalText">Something goes wrong.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock modal %}
+
+
+{% block header %}
+<!-- Title Content -->
+<header>
+	<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+		<ol class="carousel-indicators">
+			<li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+			<li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+			<li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+		</ol>
+		<div class="carousel-inner" role="listbox">
+			<!-- Slide One - Set the background image for this slide in the line below -->
+			<div class="carousel-item active" style="background-image: url('./static/img/landing/la_muse_lucechapel.jpg')">
+				<div class="carousel-caption d-none d-md-block">
+					<h3>Luce Chapel & La Muse</h3>
+					<p>La Muse by Pablo Picasso</p>
+				</div>
+			</div>
+			<!-- Slide Two - Set the background image for this slide in the line below -->
+			<div class="carousel-item" style="background-image: url('./static/img/landing/udnie_lucechapel.jpg')">
+				<div class="carousel-caption d-none d-md-block">
+					<h3>Luce Chapel & Udnie</h3>
+					<p>Udnie by Francis Picabia.</p>
+				</div>
+			</div>
+			<!-- Slide Three - Set the background image for this slide in the line below -->
+			<div class="carousel-item" style="background-image: url('./static/img/landing/wave_crop_lucechapel.jpg')">
+				<div class="carousel-caption d-none d-md-block">
+					<h3>Luce Chapel & 神奈川沖浪裏</h3>
+					<p>神奈川沖浪裏 by 葛飾 北斎</p>
+				</div>
+			</div>
+		</div>
+		<a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+			<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+			<span class="sr-only">Previous</span>
+		</a>
+		<a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+			<span class="carousel-control-next-icon" aria-hidden="true"></span>
+			<span class="sr-only">Next</span>
+		</a>
+	</div>
+</header>
+{% endblock header %}
+
+{% block introduce %}
+<!-- About -->
+<section id="introduce" class="mt-5">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12 text-center">
+				<h2 class="section-heading text-uppercase">About</h2>
+				<h3 class="section-subheading text-muted">A brief introduction of transformation methods.</h3>
+			</div>
+		</div>
+		<section>
+		  <div class="container">
+		    <div class="row align-items-center border rounded" id="fast-style">
+		      <div class="col-lg-12">
+		        <div class="p-5">
+		          <h2 class="text-center">Fast neural style</h2>
+		          <a href="https://arxiv.org/abs/1603.08155" class="h5 text-center">Original paper: Perceptual Losses for Real-Time Style Transfer and Super-Resolution</a>
+		          <p class="text-justify">In this method, we choose a style image and many content images to train a feedforward model.
+		          				By passing the output image of model, original style image and original content image into VGG pretrained model, we can extract features from specific layers, and then use loss function to calculate the difference between these features, combine all differences, we can get total loss. Our objective is to minimize the total loss, by using optimizer and backpropagate to update the model's weight, we can get a model which generate a combination image using the style image we selected.</p>
+		          <img class="img-fluid rounded" src="{{url_for('static', filename='img/about/fast_style_model.jpg')}}" alt="Fast style model">
+		        </div>
+		      </div>
+		    </div>
+		  </div>
+		</section>
+
+		<section>
+		  <div class="container">
+		    <div class="row align-items-center border rounded" id="style-swap">
+		      <div class="col-lg-12">
+		        <div class="p-5">
+		          <h2 class="text-center">Style swap transfer</h2>
+		          <a href="https://arxiv.org/abs/1612.04337" class="h5 text-center">Original paper: Fast Patch-based Style Transfer of Arbitrary Style</a>
+		          <p class="text-justify">In this method, we use many style images and many content images to train a decoder model.
+		          						  Different from fast neural style method, instead of using content loss function and style loss function,
+		          						  we use the method called "Style swap". First, we pass the content image and style image to VGG pretrained model,
+		          						  and get a content feature and a style feature in specific layer (we use relu3-3), and then extract many patches from the style feature, using each patches to scan over each part of the content feature to find the similarity. At the end, we replace every part the content feature by the most similar one patch from style feature to get a collage content. And pass the collage content to the decoder model. Finally, pass the output of decoder model into VGG pretrained model, compare the difference with original content, we can use the loss to optimize our decoder model, and get a model which can generate a combination image by any style image.</p>
+		          <img class="img-fluid rounded" src="{{url_for('static', filename='img/about/style_swap_model.jpg')}}" alt="Style swap model">
+		        </div>
+		      </div>
+		    </div>
+		  </div>
+		</section>
+
+		<section>
+		  <div class="container">
+		    <div class="row align-items-center border rounded" id="mask-style">
+		      <div class="col-lg-12">
+		        <div class="p-5">
+		          <h2 class="text-center">Mask neural style</h2>
+		          <a href="https://arxiv.org/abs/1703.06870" class="h5 text-center">Original paper: Mask R-CNN</a>
+		          <p class="text-justify">In this method, we use Mask R-CNN pretraind model to classify and segment objects on the image. the model was pretrained on
+		          						MS COCO dataset, so it can recognize about 80 different categories of object. After using Mask R-CNN to segment objects, we can generate a mask on those objects. Transfer the image two times with two different style images by fast neural style method, and we crop one generated image by the mask, and paste the cropped part onto the other generated image. Then we can get a combination image 
+		          						with two different styles.</p>
+		          <img class="img-fluid rounded" src="{{url_for('static', filename='img/about/mask_style_model.jpg')}}" alt="Mask style model">				
+		        </div>
+		      </div>
+		    </div>
+		  </div>
+		</section>
+	</div>
+</section>
+{% endblock introduce %}
+
+<!-- Page Content -->
+{% block main %}
+
+<!--  To top button -->
+<a class="rounded to-top" id="scroll-to-top" href="#page-top">
+	<i class="fa fa-angle-up"></i>
+</a>
+{% endblock main %}
+
+{% block script %}
+
+<script type="text/javascript">
+	"use strict";
+
+	// Load this part while the DOM is ready
+	$(function() {
+
+		// To top button
+		$(".to-top").click(function() {
+			$('html, body').animate({
+				scrollTop: $("#page-top").offset().top
+			}, 1000, 
+			"easeInOutExpo");
+			return false;
+		});
+
+	  	// Display the to top button
+	  	$(document).scroll(function() {
+	  		var scrollDistance = $(this).scrollTop();
+	  		if (scrollDistance > 100) {
+	  			$('#scroll-to-top').fadeIn();
+	  		} else {
+	  			$('#scroll-to-top').fadeOut();
+	  		}
+	  	});
+	  }); 
+	</script>
+{% endblock script %}

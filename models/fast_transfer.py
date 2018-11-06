@@ -20,7 +20,7 @@ from models.src.loss import dummy_loss,StyleReconstructionRegularizer,FeatureRec
 from models.src.img_util import preprocess_reflect_image, crop_image
 
 import models.src.nets as nets
-
+import models.file_path as file_path
 
 # from 6o6o's fork. https://github.com/6o6o/chainer-fast-neuralstyle/blob/master/generate.py
 def original_colors(original, stylized,original_color):
@@ -88,16 +88,16 @@ def transfer(base_image, syle_image_path, original_color=0, blend=0, media_filte
     #img_width = x.shape[1]
     #img_height = x.shape[2]
     img_width = img_height = x.shape[1]
-    net = nets.image_transform_net(img_width,img_height)
-    model = nets.loss_net(net.output,net.input,img_width,img_height,"",0,0)
+    model = nets.image_transform_net(img_width,img_height)
+    #model = nets.loss_net(net.output,net.input,img_width,img_height,"",0,0)
 
     model.compile(Adam(),  dummy_loss)  # Dummy loss since we are learning from regularizes
 
-    model.load_weights("./models/fast_style_transfer/pretrained/"+style+'_weights.h5',by_name=False)
+    model.load_weights(file_path.MODELS_PATH + "/fast_style_transfer/pretrained/"+style+'_weights.h5', by_name=True)
     print('Model loaded')
     
     t1 = time.time()
-    y = net.predict(x)[0] 
+    y = model.predict(x)[0]
     y = crop_image(y, aspect_ratio)
 
     print("process: %s" % (time.time() -t1))
@@ -116,9 +116,7 @@ def transfer(base_image, syle_image_path, original_color=0, blend=0, media_filte
     output = BytesIO()
     im = toimage(y)
     im.save(output, format='JPEG')
-    
     del model
-    del net
     K.clear_session()
     gc.collect()
     return output.getvalue()

@@ -28,6 +28,7 @@ import models.mask_style.mrcnn.model as modellib
 from models.mask_style.mask_utils import create_mask
 from models.mask_style.mask_utils import test_create_mask
 import models.mask_style.coco.coco as coco
+import models.file_path as file_path
 
 
 
@@ -39,14 +40,13 @@ class InferenceConfig(coco.CocoConfig):
 
 
 # Root directory of the project
-ROOT_DIR = os.path.abspath("models/mask_style/")
-STYLE_MODEL_DIR = os.path.abspath("models/fast_style_transfer/pretrained/")
+ROOT_DIR = file_path.MODELS_PATH + "./mask_style/"
+STYLE_MODEL_DIR = file_path.MODELS_PATH +"./fast_style_transfer/pretrained/"
 # Directory to save logs and trained model
-MODEL_DIR = os.path.join(ROOT_DIR, "logs")
+MODEL_DIR = ROOT_DIR + "logs"
 # Local path to trained weights file
-COCO_MODEL_PATH = os.path.join(ROOT_DIR, "pretrained/mask_rcnn_coco.h5")
+COCO_MODEL_PATH = ROOT_DIR + "pretrained/mask_rcnn_coco.h5"
 # Import Mask RCNN
-sys.path.append(ROOT_DIR)  # To find local version of the library
 config = InferenceConfig()
 
 
@@ -112,7 +112,7 @@ def apply_style(content, style):
 
     model.compile(Adam(),  dummy_loss)  # Dummy loss since we are learning from regularizes
 
-    model.load_weights(os.path.join(STYLE_MODEL_DIR, style+'_weights.h5'),by_name=True)
+    model.load_weights(STYLE_MODEL_DIR + style + '_weights.h5', by_name=True)
 
     t1 = time.time()
     y = model.predict(x)[0]
@@ -129,7 +129,7 @@ def apply_style(content, style):
     gc.collect()
     return y
 
-def transfer(base_image, foresyle_image_path, backstyle_image_path, media_filter=3):
+def transfer(base_image, foresyle_image_path, backstyle_image_path):
     start_time = time.time()
     base_image = imread(base_image, mode="RGB")
     input_file = check_resize_img(base_image)
@@ -138,12 +138,9 @@ def transfer(base_image, foresyle_image_path, backstyle_image_path, media_filter
 
     print(forestyle)
     print(backstyle)
-    media_filter = media_filter
 
     mask_i = detect_mask(input_file)
-    
-    style_transfer_time = time.time()
-    
+
     generate_1 = apply_style(style=forestyle, content=input_file)
 
     generate_2 = apply_style(style=backstyle, content=input_file)

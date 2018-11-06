@@ -102,7 +102,7 @@ def check_resize_img(im):
         im = imresize(im, (new_width, new_height),interp='bilinear')
     return im
 
-def style_swap_preprocess_image(image_path, IMG_WIDTH=500, IMG_HEIGHT=500):
+def style_swap_preprocess_image(image_path, IMG_WIDTH=512, IMG_HEIGHT=512):
     mode = "RGB"
     img = imread(image_path, mode=mode)
 
