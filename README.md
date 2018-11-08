@@ -5,6 +5,22 @@ You can use this website to transfer an image into a stylish image by three meth
 
 this project is implemented mainly in Keras(some part is Tensorflow)
 
+Result
+==============================
+
+**Fast Neural Style**
+
+![Fast Neural Style](./fast_style_result.png)
+
+**Style Swap**
+
+![Style Swap](./style_swap_result.png)
+
+**Mask Style**
+
+![Mask Style](./mask_style_result.png)
+
+
 Reference
 ===============================
 
