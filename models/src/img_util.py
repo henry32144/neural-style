@@ -1,4 +1,5 @@
 from scipy.misc import imread, imresize, imsave, fromimage, toimage
+from skimage import color
 from sklearn.feature_extraction.image import reconstruct_from_patches_2d, extract_patches_2d
 from PIL import Image
 import numpy as np
@@ -7,10 +8,25 @@ import os
 import tensorflow as tf
 from keras import backend as K
 from keras.preprocessing import image
+from scipy.ndimage.filters import median_filter
 from keras.applications.vgg19 import preprocess_input
 
-# util function to convert a tensor into a valid image
+def median_filter_all_colours(im_small, window_size):
+    """Applies a median filer to all colour channels
+    
+    Params
+        ======
+            im_small (ndarray): image
+            window_size (int): the size of the filter
+    """
+    ims = []
+    for d in range(3):
+        im_conv_d = median_filter(im_small[:,:,d], size=(window_size, window_size))
+        ims.append(im_conv_d)
 
+    im_conv = np.stack(ims, axis=2).astype("uint8")
+    
+    return im_conv
 
 # Util function to open, resize and format pictures into appropriate tensors
 def preprocess_image(image_path, img_width=256, img_height=256, load_dims=False, resize=True, size_multiple=4):
@@ -99,16 +115,17 @@ def check_resize_img(im):
         else:
             new_height = int(math.sqrt(threshold/1.25))
             new_width = int(new_height * width * 1.0 / height)
-        im = imresize(im, (new_width, new_height),interp='bilinear')
+        im = imresize(im, (new_width, new_height), interp='bilinear')
     return im
 
-def style_swap_preprocess_image(image_path, IMG_WIDTH=512, IMG_HEIGHT=512):
+def style_swap_preprocess_image(image_path, IMG_WIDTH=512, IMG_HEIGHT=512, preserve_original=False):
     mode = "RGB"
     img = imread(image_path, mode=mode)
 
-    img = imresize(img,(IMG_WIDTH, IMG_HEIGHT)).astype('float32')
+    img = imresize(img,(IMG_WIDTH, IMG_HEIGHT), interp='bilinear').astype('float32')
 
-    img = preprocess_input(img)
+    if not preserve_original:
+        img = preprocess_input(img)
     
     if K.image_dim_ordering() == "th":
         img = img.transpose((2, 0, 1)).astype('float32')
@@ -169,7 +186,7 @@ def crop_image(img, aspect_ratio):
     return img
 
 
-def deprocess_image(x,img_width=256, img_height=256):
+def deprocess_image(x, img_width=256, img_height=256):
     if K.image_dim_ordering() == 'th':
         x = x.reshape((3, img_nrows, img_ncols))
         x = x.transpose((1, 2, 0))
@@ -183,3 +200,65 @@ def deprocess_image(x,img_width=256, img_height=256):
     x = x[:, :, ::-1]
     x = np.clip(x, 0, 255).astype('uint8')
     return x
+
+# fork from 6o6o. https://github.com/6o6o/chainer-fast-neuralstyle/blob/master/generate.py
+def blend_with_original_colors(original, stylized, original_color):
+    # Histogram normalization in v channel
+    ratio=1. - original_color 
+
+    hsv = color.rgb2hsv(original/255)
+    hsv_s = color.rgb2hsv(stylized/255)
+
+    hsv_s[:,:,2] = (ratio* hsv_s[:,:,2]) + (1-ratio)*hsv [:,:,2]
+    img = color.hsv2rgb(hsv_s)    
+    return img
+
+# fork from titu1994. https://github.com/titu1994/Neural-Style-Transfer/blob/master/INetwork.py
+# util function to preserve image color
+def original_color_transform(content, generated, mask=None):
+    content = fromimage(toimage(content, mode='RGB'), mode='YCbCr')
+    generated = fromimage(toimage(generated, mode='RGB'), mode='YCbCr')  # Convert to YCbCr color space
+
+    if mask is None:
+        generated[:, :, 1:] = content[:, :, 1:]  # Generated CbCr = Content CbCr
+    else:
+        width, height, channels = generated.shape
+
+        for i in range(width):
+            for j in range(height):
+                if mask[i, j] == 1:
+                    generated[i, j, 1:] = content[i, j, 1:]
+
+    generated = fromimage(toimage(generated, mode='YCbCr'), mode='RGB')  # Convert to RGB color space
+    return generated
+
+
+def load_mask(mask_path, shape, return_mask_img=False):
+    if K.image_dim_ordering() == "th":
+        _, channels, width, height = shape
+    else:
+        _, width, height, channels = shape
+
+    mask = imread(mask_path, mode="L") # Grayscale mask load
+    mask = imresize(mask, (width, height)).astype('float32')
+
+    # Perform binarization of mask
+    mask[mask <= 127] = 0
+    mask[mask > 128] = 255
+
+    max = np.amax(mask)
+    mask /= max
+
+    if return_mask_img: return mask
+
+    mask_shape = shape[1:]
+
+    mask_tensor = np.empty(mask_shape)
+
+    for i in range(channels):
+        if K.image_dim_ordering() == "th":
+            mask_tensor[i, :, :] = mask
+        else:
+            mask_tensor[:, :, i] = mask
+
+    return mask_tensor

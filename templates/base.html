@@ -9,6 +9,7 @@
     <meta name="keywords" content="tucana, neural style, neural art, deep learning art, ai art, artifical art, AI藝術, AI畫圖, AI濾鏡">
 
     <title>Tucana - let AI paint for you</title>
+    <link href="{{url_for('static', filename='img/icon/favicon.ico') }}" rel="Shortcut Icon" type="image/x-icon">
 
     <!-- Bootstrap core CSS -->
     <link href="{{url_for('static', filename='vendor/bootstrap/css/bootstrap.css') }}" rel="stylesheet">
@@ -36,7 +37,10 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
       <div class="container">
-        <a class="navbar-brand" href="/">Tucana</a>
+        <a class="navbar-brand" href="/">
+          <img src="static/img/icon/favicon.png" width="30" height="30" class="d-inline-block align-top" alt="">
+          Tucana
+        </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -58,14 +62,13 @@
 
   <!-- Bottom nav bar -->
   <footer class="footer mt-5">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom" role="navigation">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-bottom" role="navigation">
       <div class="container">
         <div class="row">
+          <a href="https://icons8.com/icon/97138/toucan" class="col-md-12 text-light">Toucan icon by Icons8</a>
         </div>
       </div>
   </footer>
-   <div>
-   </div>
     <!-- Bootstrap core JavaScript -->
     <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/solid.js" integrity="sha384-+Ga2s7YBbhOD6nie0DzrZpJes+b2K1xkpKxTFFcx59QmVPaSA8c7pycsNaFwUK6l" crossorigin="anonymous"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/fontawesome.js" integrity="sha384-7ox8Q2yzO/uWircfojVuCQOZl+ZZBg2D2J5nkpLqzH1HY0C1dHlTKIbpRz/LG23c" crossorigin="anonymous"></script>
@@ -83,5 +86,4 @@
 
     {% block script %}{% endblock script %}
   </body>
-
 </html>

@@ -8,15 +8,14 @@ import skimage.io
 import time
 
 from skimage.color import rgb2gray
-from scipy.ndimage.filters import median_filter
 from scipy.misc import imread, imsave, toimage
 
 from keras import backend as K
 from keras.optimizers import Adam
 
 from models.src.loss import dummy_loss
-from models.src.img_util import preprocess_reflect_image, crop_image, check_resize_img
-from models.src.nets import image_transform_net
+from models.src.img_util import preprocess_reflect_image, crop_image, check_resize_img, blend_with_original_colors, original_color_transform, median_filter_all_colours
+from models.src.nets import image_transform_net, depthwise_image_transform_net
 
 import tensorflow as tf
 
@@ -51,6 +50,12 @@ config = InferenceConfig()
 
 
 def split_path(path):
+    """Split image file path
+
+    Params
+        ======
+            path (str): file path
+    """
     #drop file extension
     filename = path.rsplit('.', 1)[0]
     #drop static/img/
@@ -60,6 +65,13 @@ def split_path(path):
 
 
 def detect_mask(image):
+    """Using Mask-RCNN to detect object and generate masks
+
+    Params
+        ======
+            image (ndarray): image
+
+    """
     mrcnn_model = modellib.MaskRCNN(mode="inference", model_dir=MODEL_DIR, config=config)
     # Load weights trained on MS-COCO
     mrcnn_model.load_weights(COCO_MODEL_PATH, by_name=True)
@@ -72,21 +84,15 @@ def detect_mask(image):
     
     return mask_i
 
-def median_filter_all_colours(im_small, window_size):
-    """
-    Applies a median filer to all colour channels
-    """
-    ims = []
-    for d in range(3):
-        im_conv_d = median_filter(im_small[:,:,d], size=(window_size,window_size))
-        ims.append(im_conv_d)
-
-    im_conv = np.stack(ims, axis=2).astype("uint8")
-    
-    return im_conv
-
-
 def apply_style_mask(content, generated, mask):
+    """Apply masks on content image
+
+    Params
+        ======
+            content (ndarray): content image
+            generated (ndarray): generated image
+            mask (ndarray): mask
+    """
     width, height, channels = generated.shape
 
     for i in range(width):
@@ -97,59 +103,97 @@ def apply_style_mask(content, generated, mask):
     return generated
 
 
-def apply_style(content, style):
-    print(style)
+def apply_style(content, style, median_filter_size=3):
+    """Apply style using fast style transformation
+
+    Params
+        ======
+            content (ndarray): content image passed by user
+            style (str): style image stored in server
+
+    """
     style= style
-
     input_file = content
+    median_filter_size = median_filter_size
 
-    media_filter = 3
-
+    """ Preprocessing """
     aspect_ratio, x = preprocess_reflect_image(input_file, size_multiple=4)
-
     img_width= img_height = x.shape[1]
-    model = image_transform_net(img_width,img_height)
 
+    """ Load Model """
+    model = depthwise_image_transform_net(img_width, img_height)
     model.compile(Adam(),  dummy_loss)  # Dummy loss since we are learning from regularizes
+    model.load_weights(STYLE_MODEL_DIR + style + '_weights.h5')
 
-    model.load_weights(STYLE_MODEL_DIR + style + '_weights.h5', by_name=True)
-
+    """ Start transfer """
     t1 = time.time()
     y = model.predict(x)[0]
-    y = crop_image(y, aspect_ratio)
-
     print("process: %s" % (time.time() -t1))
 
-    ox = crop_image(x[0], aspect_ratio)
-
-    y =  median_filter_all_colours(y, media_filter)
+    """ Post processing """
+    y = crop_image(y, aspect_ratio)
+    y =  median_filter_all_colours(y, median_filter_size)
 
     del model
     K.clear_session()
     gc.collect()
     return y
 
-def transfer(base_image, foresyle_image_path, backstyle_image_path):
-    start_time = time.time()
-    base_image = imread(base_image, mode="RGB")
-    input_file = check_resize_img(base_image)
+def transfer(content_image, foresyle_image_path, backstyle_image_path, color_adjusting_mode=0, blending_alpha=0, median_filter_size=3):
+    """Mask style transformation
+
+    Params
+        ======
+            content_image (ndarray): content image passed by user
+            foresyle_image_path (str): foreground style image stored in server
+            backstyle_image_path (str): background style image stored in server
+            color_adjusting_mode (float): Color adjusting mode. 
+                0: None,
+                1: Preserve color, 
+                2: Blend with original color
+            blending_alpha (float): the degree of the blending images, from 0 to 100
+            median_filter_size (int): the size of the median filter
+
+    """
+    content_image = imread(content_image, mode="RGB")
+    color_adjusting_mode = int(color_adjusting_mode)
+    blending_alpha = float(blending_alpha) / 100  # scale to 0 ~ 1
+    median_filter_size = median_filter_size
+
+    """ Preprocessing """
+    content_image = check_resize_img(content_image)
+    aspect_ratio, x = preprocess_reflect_image(content_image, size_multiple=4)
+    img_width = img_height = x.shape[1]
+
     forestyle = split_path(foresyle_image_path)
     backstyle = split_path(backstyle_image_path)
 
     print(forestyle)
     print(backstyle)
+    """ Start transfer """
+    start_time = time.time()
+    mask_i = detect_mask(content_image)
+    generated_1 = apply_style(style=forestyle, content=content_image)
+    print("generated_1", generated_1.shape)
+    generated_2 = apply_style(style=backstyle, content=content_image)
+    print("generated_2", generated_2.shape)
 
-    mask_i = detect_mask(input_file)
-
-    generate_1 = apply_style(style=forestyle, content=input_file)
-
-    generate_2 = apply_style(style=backstyle, content=input_file)
-
-    generate_3 = apply_style_mask(content=generate_1, generated=generate_2, mask=mask_i[: , :, 0])
+    generated_3 = apply_style_mask(content=generated_1, generated=generated_2, mask=mask_i[: , :, 0])
+    print("generated_3", generated_3.shape)
     print("total_transfer_time:", time.time() - start_time)
 
+    ox = crop_image(x[0], aspect_ratio)
+    """ Color adjusting """
+    print(color_adjusting_mode)
+    if color_adjusting_mode == 1:
+        y = original_color_transform(ox, generated_3)
+    elif color_adjusting_mode == 2:
+        y = blend_with_original_colors(ox, generated_3, blending_alpha)
+    else:
+        y = generated_3
+
     output = BytesIO()
-    im = toimage(generate_3)
+    im = toimage(y)
     im.save(output, format='JPEG')
     
     K.clear_session()

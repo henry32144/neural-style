@@ -190,6 +190,30 @@
 		</div>
 		<HR>
 	</div>
+	<section class="container mt-3 text-center" id="color-adjusting">
+		<div class="text-center mb-3">
+			<h4 class="text-muted">Optional adjustment</h4>
+		</div>
+		<div class="radio">
+		<div class="col-md-4 div-centered"> 
+		  	<label><input type="radio" name="original-color" value="0" id="not-preserve-original" checked>None</label>
+		  </div>
+		</div>
+		<div class="radio">
+			<div class="col-md-4 div-centered"> 
+		  	<label><input type="radio" name="original-color" value="1" id="preserve-color-radio">Preserve original color</label>
+		  </div>
+		</div>
+		<div class="radio">
+			<div class="col-md-4 div-centered"> 
+			  	<label><input type="radio" name="original-color" value="2" id="blend-original-radio">Blend with original color</label>
+			  	<div class="slidecontainer text-center d-none" id="blend-slider-container">
+			  		<input type="range" min="0" max="100" value="50" class="slider" id="blend-ratio">
+			  		<span>Ratio: <span id="blend-value-text">50</span>%</span>
+			  	</div>
+			</div>
+		</div>
+	</section>
 	<div class="container mt-3">
 		<div class="d-flex justify-content-center">
 		  <div class="row">
@@ -240,9 +264,22 @@
 			var form = new FormData();
 			var files = $("#img-input").fileinput('getFileStack');
 			var styles = $("#style-img-input").fileinput('getFileStack');
+			var colorAdjustingMode = $('input[type=radio][name=original-color]:checked').val();
 
 			form.append("file", files[0]);
         	form.append("style", styles[0]);
+        	form.append("colorAdustingMode", colorAdjustingMode);
+        	// Contain blend ratio
+        	if(colorAdjustingMode == '2') {
+        		var blendSlider = document.getElementById("blend-ratio");
+        		var sliderValue = blendSlider.value;
+        		if(sliderValue == null || sliderValue == undefined) {
+        			sliderValue = 0
+        		}
+        		form.append("blendRatio", sliderValue);
+        		console.log(sliderValue);
+        	}
+
         	sendData(form);
 			// Show the result section
 			$(".result-section").toggleClass("d-none", false);
@@ -331,7 +368,14 @@
 
 	}
 
-	
+	var blendSlider = document.getElementById("blend-ratio");
+	var blendSliderTextValue = document.getElementById("blend-value-text");
+	blendSliderTextValue.innerHTML = blendSlider.value; // Display the default slider value
+
+	// Update the current slider value (each time you drag the slider handle)
+	blendSlider.oninput = function() {
+	  blendSliderTextValue.innerHTML = this.value;
+	}
 
 	$("#img-input").fileinput({
 		uploadUrl: '/dropzone_dummy',
@@ -372,29 +416,19 @@
 	});
 	// Load this part while the DOM is ready
 	$(function() {
-		// // Listen to the upload image button
-		// $("#img-input").change(function() {
-		// 	readURL(this);
-		// });
-		// // Clean the former selected image
-		// $("#img-input").click(function() {
-		// 	$("#img-preview").css("visibility", "hidden");
-		// 	$("#img-input").prop("value", "");
-		// 	$("#img-output").attr("src","");
-		// 	toggleOutputImage(false);
-		// 	$(".result-section").toggleClass("d-none", true);
-		// });
-
-		// Listen to the style image selected event
-
-		// $(".style-image").click(function() {
-		// 	$(".style-image").removeClass("item-onclick");
-		// 	$(this).addClass("item-onclick");
-		// 	var selectedId = $(this).parent(".img-item").attr('id');
-		// 	$("#selected-style").text("Style: " + selectedId);
-		// 	selectedStyleImage = selectedId;
-		// });
-
+		$('input[type=radio][name=original-color]').change(function() {
+		    switch(this.value) {
+		      case '1':
+		        $("#blend-slider-container").toggleClass("d-none", true);
+		        break;
+		      case '2':
+		        $("#blend-slider-container").toggleClass("d-none", false);
+		        break;
+		      default:
+		      	$("#blend-slider-container").toggleClass("d-none", true);
+		      	break;
+		    }
+		});
 
 		// To top button
 		$(".to-top").click(function() {

@@ -5,7 +5,7 @@ from keras.layers.convolutional import UpSampling2D, Conv2D
 from keras.applications.vgg19 import VGG19
 from keras.applications.vgg16 import VGG16
 from keras import backend as K
-from models.src.layers import InputNormalize,VGGNormalize,ReflectionPadding2D,Denormalize,conv_bn_relu,res_conv,dconv_bn_nolinear
+from models.src.layers import InputNormalize,VGGNormalize,ReflectionPadding2D,Denormalize,conv_bn_relu,res_conv,dconv_bn_nolinear, depthwise_res_conv
 from models.src.layers import conv_in_relu, style_swap_layer, TanhNormalize
 from models.src.loss import StyleReconstructionRegularizer,FeatureReconstructionRegularizer,TVRegularizer
 
@@ -37,15 +37,14 @@ def InverseNet_3_1(feature_shape):
     ## feature = shape of content concatenate with style
 
     swapped_input = Input(shape=feature_shape, name='swapped_input')
-    channels = feature_shape[2]
 
-    x = conv_in_relu(channels, 3, 3, stride=(1, 1))(swapped_input)
+    x = conv_in_relu(256, 3, 3, stride=(1, 1))(swapped_input)
     x = UpSampling2D()(x)
-    x = conv_in_relu(int(channels / 2), 3, 3, stride=(1, 1))(x)
-    x = conv_in_relu(int(channels / 2), 3, 3, stride=(1, 1))(x)
+    x = conv_in_relu(128, 3, 3, stride=(1, 1))(x)
+    x = conv_in_relu(128, 3, 3, stride=(1, 1))(x)
     x = UpSampling2D()(x)
-    x = conv_in_relu(int(channels / 4), 3, 3, stride=(1, 1))(x)
-    x = conv_in_relu(int(channels / 4), 3, 3, stride=(1, 1))(x)
+    x = conv_in_relu(64, 3, 3, stride=(1, 1))(x)
+    x = conv_in_relu(64, 3, 3, stride=(1, 1))(x)
 
     inverse_net_output = Conv2D(3, (3, 3), padding='same', name='inverse_net_output')(x)
 
@@ -57,6 +56,28 @@ def InverseNet_3_1(feature_shape):
     return model
 
 # "Fast-style":
+def depthwise_image_transform_net(img_width,img_height,tv_weight=1):
+    x = Input(shape=(img_width,img_height,3))
+    a = InputNormalize()(x)
+    a = ReflectionPadding2D(padding=(40,40),input_shape=(img_width,img_height,3))(a)
+    a = conv_bn_relu(32, 9, 9, stride=(1,1))(a)
+    a = conv_bn_relu(64, 9, 9, stride=(2,2))(a)
+    a = conv_bn_relu(128, 3, 3, stride=(2,2))(a)
+    for i in range(5):
+        a = depthwise_res_conv(128,3,3)(a)
+    a = dconv_bn_nolinear(64,3,3)(a)
+    a = dconv_bn_nolinear(32,3,3)(a)
+    a = dconv_bn_nolinear(3,9,9,stride=(1,1), activation="tanh")(a)
+    # Scale output to range [0, 255] via custom Denormalize layer
+    y = Denormalize(name='transform_output')(a)
+    
+    model = Model(inputs=x, outputs=y)
+    
+    if tv_weight > 0:
+        add_total_variation_loss(model.layers[-1], tv_weight)
+        
+    return model
+
 def image_transform_net(img_width,img_height,tv_weight=1):
     x = Input(shape=(img_width,img_height,3))
     a = InputNormalize()(x)
@@ -88,7 +109,10 @@ def loss_net(x_in, trux_x_in,width, height,style_image_path,content_weight,style
     # Normalize the inputs via custom VGG Normalization layer
     x = VGGNormalize(name="vgg_normalize")(x)
 
-    vgg = VGG16(include_top=False,input_tensor=x)
+    # Set weights to None to avoid "ValueError: You are trying to load a weight file containing 13 layers into a model with 45 layers."
+    vgg = VGG16(include_top=False,input_tensor=x, weights=None)  
+    # You have to specify the path to your model here
+    vgg.load_weights("Your path to the model" + ".keras/models/vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5", by_name=True)
 
     vgg_output_dict = dict([(layer.name, layer.output) for layer in vgg.layers[-18:]])
     vgg_layers = dict([(layer.name, layer) for layer in vgg.layers[-18:]])

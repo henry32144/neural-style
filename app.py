@@ -52,13 +52,14 @@ def about():
         'about.html')
 
 ## Deal with upload request
-@app.route('/upload_image', methods=['POST'])
-def upload_file():
-    ## Get message from the form
-    file = request.files['file']
+@app.route('/faststyle_upload_image', methods=['POST'])
+def faststyle_upload_file():
+    ## Get data from the form
+    content = request.files['file']
     style = request.form['style']
+    color_adjusting_mode = request.form.get("colorAdustingMode", 0)
+    blend_ratio = request.form.get("blendRatio", 0)
     ## Print style to log
-    print(style, file=sys.stdout)
     style_image_path = None
     ## Check style
     style_image_path = style_names.get_style_path(style)
@@ -68,13 +69,12 @@ def upload_file():
         return json_data
     
     ## If file is valid
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
+    if content and allowed_file(content.filename):
+        filename = secure_filename(content.filename)
 
         ## Start transfer
-        #data = transfer.transfer(file, STYLE_IMG_PATH)
         lock.acquire()
-        data = fast_transfer.transfer(file, style_image_path)
+        data = fast_transfer.transfer(content, style_image_path, color_adjusting_mode, blend_ratio)
         lock.release()
         ## encode image data to base64
         data = base64.b64encode(data).decode('UTF-8')
@@ -86,19 +86,20 @@ def upload_file():
 ## Deal with upload request
 @app.route('/styleswap_upload_image', methods=['POST'])
 def styleswap_upload_file():
-    ## Get message from the form
-    file = request.files['file']
+    ## Get data from the form
+    content = request.files['file']
     style = request.files['style']
 
-    
+    color_adjusting_mode = request.form.get("colorAdustingMode", 0)
+    blend_ratio = request.form.get("blendRatio", 0)
     ## If file is valid
-    if file and allowed_file(file.filename):
+    if content and allowed_file(content.filename):
         if style and allowed_file(style.filename):
-            filename = secure_filename(file.filename)
+            filename = secure_filename(content.filename)
 
             ## Start transfer
             lock.acquire()
-            data = style_swap_transfer.transfer(file, style)
+            data = style_swap_transfer.transfer(content, style, color_adjusting_mode, blend_ratio)
             lock.release()
             ## encode image data to base64
             data = base64.b64encode(data).decode('UTF-8')
@@ -116,10 +117,13 @@ def styleswap_upload_file():
 ## Deal with upload request
 @app.route('/maskstyle_upload_image', methods=['POST'])
 def maskstyle_upload_file():
-    ## Get message from the form
-    file = request.files['file']
+    ## Get data from the form
+    content = request.files['file']
     forestyle = request.form['forestyle']
     backstyle = request.form['backstyle']
+
+    color_adjusting_mode = request.form.get("colorAdustingMode", 0)
+    blend_ratio = request.form.get("blendRatio", 0)
 
     forestyle_image_path = None
     backstyle_image_path = None
@@ -132,12 +136,12 @@ def maskstyle_upload_file():
         return json_data
 
     ## If file is valid
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
+    if content and allowed_file(content.filename):
+        filename = secure_filename(content.filename)
 
         ## Start transfer
         lock.acquire()
-        data = mask_style_transfer.transfer(file, forestyle_image_path, backstyle_image_path)
+        data = mask_style_transfer.transfer(content, forestyle_image_path, backstyle_image_path, color_adjusting_mode, blend_ratio)
         lock.release()
         ## encode image data to base64
         data = base64.b64encode(data).decode('UTF-8')

@@ -4,7 +4,7 @@ from keras.layers.merge import add
 from keras.engine import InputSpec
 from keras.layers.core import Activation
 from keras.layers.normalization import BatchNormalization
-from keras.layers.convolutional import Deconvolution2D, Conv2D,UpSampling2D,Cropping2D
+from keras.layers.convolutional import Deconvolution2D, Conv2D,UpSampling2D,Cropping2D, SeparableConv2D
 from keras.applications.vgg16 import preprocess_input
 from keras.layers.advanced_activations import LeakyReLU
 from keras.applications.imagenet_utils import  preprocess_input
@@ -291,6 +291,14 @@ class TanhNormalize(Layer):
     def compute_output_shape(self,input_shape):
         return input_shape
 
+def reflect_conv_in_relu(nb_filter, nb_row, nb_col,stride):   
+    def conv_func(x):
+        x = ReflectionPadding2D(padding=(2,2))(x)
+        x = Conv2D(nb_filter, (nb_row, nb_col), strides=stride,padding='valid')(x)
+        x = InstanceNormalization()(x)
+        x = Activation("relu")(x)
+        return x
+    return conv_func
 
 def conv_bn_relu(nb_filter, nb_row, nb_col,stride):   
     def conv_func(x):
@@ -320,6 +328,18 @@ def res_conv(nb_filter, nb_row, nb_col,stride=(1,1)):
         a = Conv2D(nb_filter, (nb_row, nb_col), strides=stride, padding='valid')(a)
         y = BatchNormalization()(a)
 
+        return  add([identity, y])
+
+    return _res_func
+
+def depthwise_res_conv(nb_filter, nb_row, nb_col,stride=(1,1)):
+    def _res_func(x):
+        identity = Cropping2D(cropping=((2,2),(2,2)))(x)
+        a = SeparableConv2D(nb_filter, (nb_row, nb_col), strides=stride, padding='valid')(x)
+        a = BatchNormalization()(a)
+        a = Activation("relu")(a)
+        a = SeparableConv2D(nb_filter, (nb_row, nb_col), strides=stride, padding='valid')(a)
+        y = BatchNormalization()(a)
         return  add([identity, y])
 
     return _res_func

@@ -7,6 +7,7 @@ from scipy.misc import imsave
 
 import time
 import numpy as np
+import os
 import argparse
 
 from keras.callbacks import TensorBoard
@@ -20,18 +21,20 @@ import models.src.nets as nets
 
 def display_img(i,x,style,is_val=False):
     # save current generated image
-    img = x #deprocess_image(x)
+    img = x
+    base_path = "output/train/"
     if is_val:
-        #img = ndimage.median_filter(img, 3)
-
-        fname = 'images/output/%s_%d_val.png' % (style,i)
+        
+        fname = base_path + '%s_%d_val.png' % (style,i)
     else:
-        fname = 'images/output/%s_%d.png' % (style,i)
+        fname = base_path + '%s_%d.png' % (style,i)
+    if not os.path.exists(base_path):
+            os.makedirs(base_path)
     imsave(fname, img)
     print('Image saved as', fname)
 
 def get_style_img_path(style):
-    return "images/style/"+style+".jpg"
+    return "static/img/styles/"+style+".jpg"
 
 
 def main(args):
@@ -48,9 +51,9 @@ def main(args):
     model.summary()
 
 
-    nb_epoch = 82785 *2
+    nb_epoch = 82785 * 2
     train_batchsize =  1
-    train_image_path = "E:\cocodataset"
+    train_image_path = args.path
 
     learning_rate = 1e-3 #1e-3
     optimizer = Adam() # Adam(lr=learning_rate,beta_1=0.99)
@@ -61,9 +64,6 @@ def main(args):
 
     dummy_y = np.zeros((train_batchsize,img_width,img_height,3)) # Dummy output, not used since we use regularizers to train
 
- 
-
-    #model.load_weights(style+'_weights.h5',by_name=False)
 
     skip_to = 0
 
@@ -94,7 +94,7 @@ def main(args):
 
             display_img(i, x[0], style)
             display_img(i, val_x[0],style, True)
-            model.save_weights(style+'_weights.h5')
+            net.save_weights(style+'_weights.h5')
 
         i+=train_batchsize
 
@@ -102,7 +102,10 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Real-time style transfer')
-        
+    
+    parser.add_argument('--path', '-p', type=str, required=True,
+                        help='training images path')
+
     parser.add_argument('--style', '-s', type=str, required=True,
                         help='style image file name without extension')
           

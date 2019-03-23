@@ -6,6 +6,7 @@ __pycache__
 .ipynb_checkpoints/*
 .ipynb_checkpoints
 models/fast_style_transfer/pretrained/*
+models/fast_style_transfer/original_pretrained/*
 models/style_swap/pretrained/*
 models/mask_style/pretrained/*
 models/mask_style/logs/*

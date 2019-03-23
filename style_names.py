@@ -8,7 +8,7 @@ STYLE_DES_GLANEUSES = 'static/img/des_glaneuses.jpg'
 STYLE_FIRE = 'static/img/fire.jpg'
 STYLE_JINGDO = 'static/img/jingdo.jpg'
 STYLE_LA_MUSE = 'static/img/la_muse.jpg'
-STYLE_MIRROR = 'static/img/mirror.jpg'
+STYLE_MOSAIC = 'static/img/mosaic.jpg'
 STYLE_MONALISA = 'static/img/monalisa.jpg'
 STYLE_MOUNTAIN_WATER = 'static/img/mountain_water.jpg'
 STYLE_PICASSOSELF = 'static/img/picassoself.jpg'
@@ -25,7 +25,7 @@ STYLE_ZHANGDAQIAN = 'static/img/zhangdachien.jpg'
 style_dicts = {'aurora':STYLE_AURORA, 'chinese':STYLE_CHINESE,
                 'chingmin': STYLE_CHINGMIN, 'colorful':STYLE_COLORFUL, 'crystal':STYLE_CRYSTAL,
                 'des_glaneuses': STYLE_DES_GLANEUSES, 'fire': STYLE_FIRE, 'jingdo': STYLE_JINGDO,
-               'la_muse': STYLE_LA_MUSE, 'mirror': STYLE_MIRROR, 'monalisa': STYLE_MONALISA, 'mountain_water': STYLE_MOUNTAIN_WATER,
+               'la_muse': STYLE_LA_MUSE, 'mosaic': STYLE_MOSAIC, 'monalisa': STYLE_MONALISA, 'mountain_water': STYLE_MOUNTAIN_WATER,
                'picassoself': STYLE_PICASSOSELF, 'sky': STYLE_SKY, 'starry_night': STYLE_STARRY_NIGHT,
                'tiger': STYLE_TIGER, 'udnie': STYLE_UDNIE, 'water': STYLE_WATER, 'wave_crop': STYLE_WAVE_CROP, 'ybfire': STYLE_YBFIRE,
                'zhangdachien': STYLE_ZHANGDAQIAN}
