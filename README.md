@@ -43,8 +43,8 @@ Our Environment
 
 *  Python >= 3.5 (Anaconda)
 
-*  CUDA 8.0 (For GPU support, if you want to train a model)
-*  Cudnn 6.0 (For GPU support, if you want to train a model)
+*  CUDA >=8.0 (For GPU support, using newer version would need to check out the compatibility with tensorflow-gpu version)
+*  Cudnn >=6.0 (For GPU support)
 
 *  Flask 0.12.2
 *  Keras 2.1.3
