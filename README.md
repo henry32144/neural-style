@@ -41,7 +41,7 @@ We use [Mask R-CNN](https://github.com/matterport/Mask_RCNN) which is implemente
 Our Environment
 ===============================
 
-*  Python 3.5 (Anaconda)
+*  Python >= 3.5 (Anaconda)
 
 *  CUDA 8.0 (For GPU support, if you want to train a model)
 *  Cudnn 6.0 (For GPU support, if you want to train a model)
@@ -53,19 +53,15 @@ Our Environment
 *  scikit-image
 *  pycocotool
 *  imgaug
+*  pil
 *  cython
 
-or directly use pip install the requirement txt file
-
-```
-pip install -r requirement.txt
-```
 You also need to meet the requirements of [Mask R-CNN](https://github.com/matterport/Mask_RCNN).
 
 How to Use
 ==============================
 
-Download the [distillated pretrained models](https://drive.google.com/open?id=12x2OX4AAuETgMRAxPWiRnPLoLPaRrXMu), and unzip the models into the **models/fast_style_transfer/pretrained**, then modify MODELS_PATH in "models/file_path.py", and use console move to the root project folder and type
+Download the [distillated pretrained models](https://drive.google.com/open?id=12x2OX4AAuETgMRAxPWiRnPLoLPaRrXMu), and unzip the models into the `models/fast_style_transfer/pretrained`, then modify MODELS_PATH in `models/file_path.py`, and use console move to the root project folder and type
 
 ```
 python app.py
@@ -80,11 +76,11 @@ You have to download the [COCO dataset](http://cocodataset.org/#download) first,
 
 **Fast Neural Style Original**
 
-1. you need to fill the path string in **loss_net** function in **models/src/nets.py** to your [pretrained vgg16 model](https://github.com/fchollet/deep-learning-models/releases). Note that your training images should put in a folder like this **cocotrain/0/xxx.jpg** because we are using ImageDataGenerator to load the images, it assume that different classes of images are stored in the differnt folders.
+1. You need to fill the path string in `loss_net` function in `models/src/nets.py` to your [pretrained vgg16 model](https://github.com/fchollet/deep-learning-models/releases). Note that your training images should put in a folder like this `cocotrain/0/xxx.jpg` because we are using ImageDataGenerator to load the images, it assume that different classes of images are stored in the differnt folders.
 
-2. prepare a style image and put it in **static/img/styles/**.
+2. Prepare a style image and put it in `static/img/styles/`.
 
-3. Type the command below to train a model. This is an example showing that if my training images are stored at the project root folder, and I want to train a style named mosaic.
+3. Type the command below to train a model. This is an example showing that if my training images are stored at the project root folder, and say I want to train a style named mosaic.
 
 ```
 python train_fast_model.py -p ./cocotrain -s mosaic
@@ -98,4 +94,26 @@ python train_fast_model.py -h
 
 **Fast Neural Style Distillated**
 
-Working... (❍ᴥ❍ʋ)
+1. You need to have the original **Fast Neural Style** pretrained models, here is the link [original pretrained models](https://drive.google.com/open?id=1WwJwrKz6pXWMa1WlyX2sOsRO7iW2g6qj).
+
+2. Run the `generate_image.py`, you also need to specify the COCO dataset path using `-p`.
+
+```
+python generate_image.py -p ./cocotrain
+```
+
+3. Run the `train_distillated_model.py`, the path to COCO dataset path and style name are needed. Below is example.
+
+```
+python train_distillated_model.py -p ./cocotrain -s mosaic
+```
+
+**Style Swap Model**
+
+You need not only [COCO dataset](http://cocodataset.org/#download), but also lots of style images. Just like the paper, we use [Painter by Numbers](https://www.kaggle.com/c/painter-by-numbers). Note that your training images and style images should put in a folder like `cocotrain/0/xxx.jpg` and `styleimages/0/xxx.jpg`.
+
+1. Run the `train_style_swap_model.py`, the path to COCO dataset path and style images are needed. Below is example.
+
+```
+python train_style_swap_model.py -p ./cocotrain -s ./styleimages
+```

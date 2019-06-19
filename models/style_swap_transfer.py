@@ -47,17 +47,17 @@ def transfer(base_image, style_image, color_adjusting_mode=0, blending_alpha=0, 
     aspect_ratio = 1
     
     """ Preprocessing """
-    content_original = style_swap_preprocess_image(input_file, IMG_WIDTH, IMG_HEIGHT, preserve_original=True)
-    content_processed = style_swap_preprocess_image(input_file, IMG_WIDTH, IMG_HEIGHT)
-    style_processed = style_swap_preprocess_image(style_file, IMG_WIDTH, IMG_HEIGHT)
+    content_original = style_swap_preprocess_image(input_file, IMG_HEIGHT, IMG_WIDTH, preserve_original=True)
+    content_processed = style_swap_preprocess_image(input_file, IMG_HEIGHT, IMG_WIDTH)
+    style_processed = style_swap_preprocess_image(style_file, IMG_HEIGHT, IMG_WIDTH)
 
     img_width = img_height = content_processed.shape[1]
     print(img_width, img_height)
     
     """ Load Model """
-    encode_net = build_encode_net_with_swap_3_1((img_width, img_height, 3))
+    encode_net = build_encode_net_with_swap_3_1((img_height, img_width, 3))
     print('Encode Model loaded')
-    inverse_net = InverseNet_3_1((int(img_width / 4) , int(img_height / 4), 256))
+    inverse_net = InverseNet_3_1((int(img_height / 4) , int(img_width / 4), 256))
     inverse_net.load_weights(file_path.MODELS_PATH + "/style_swap/pretrained/inverse_net_vgg19.h5", by_name=True)
     print('Model loaded')
     inverse_net.compile(optimizer="adam", loss='mse')

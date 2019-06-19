@@ -94,14 +94,17 @@ def main(args):
 
             display_img(i, x[0], style)
             display_img(i, val_x[0],style, True)
-            net.save_weights(style+'_weights.h5')
+            dir_name = "models/fast_style_transfer/original_pretrained/"
+            if not os.path.exists(dir_name):
+                os.makedirs(dir_name)
+            net.save_weights(dir_name + style + '_weights.h5')
 
         i+=train_batchsize
 
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Real-time style transfer')
+    parser = argparse.ArgumentParser(description='Train a fast style model')
     
     parser.add_argument('--path', '-p', type=str, required=True,
                         help='training images path')

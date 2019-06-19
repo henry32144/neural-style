@@ -1,10 +1,11 @@
 from keras.layers import Input, Lambda
 from keras.layers.merge import concatenate
 from keras.models import Model,Sequential
-from keras.layers.convolutional import UpSampling2D, Conv2D
+from keras.layers.convolutional import UpSampling2D, Conv2D, MaxPooling2D
 from keras.applications.vgg19 import VGG19
 from keras.applications.vgg16 import VGG16
 from keras import backend as K
+import models.file_path as file_path
 from models.src.layers import InputNormalize,VGGNormalize,ReflectionPadding2D,Denormalize,conv_bn_relu,res_conv,dconv_bn_nolinear, depthwise_res_conv
 from models.src.layers import conv_in_relu, style_swap_layer, TanhNormalize
 from models.src.loss import StyleReconstructionRegularizer,FeatureReconstructionRegularizer,TVRegularizer
@@ -53,6 +54,41 @@ def InverseNet_3_1(feature_shape):
     tv_weight = 1e-6
     add_total_variation_loss(model.layers[-1], tv_weight)
 
+    return model
+
+# "Style-swap": VGG19 3-1 For training
+def InverseNet_3_1_with_encoder(feature, tv_weight=1):
+    
+    swapped_input = Input(shape=feature, name='swapped_input')
+    
+    x = conv_in_relu(256, 3, 3, stride=(1,1))(swapped_input)
+    x = UpSampling2D()(x)
+    x = conv_in_relu(128, 3, 3, stride=(1,1))(x)
+    x = conv_in_relu(128, 3, 3, stride=(1,1))(x)
+    x = UpSampling2D()(x)
+    x = conv_in_relu(64, 3, 3, stride=(1,1))(x)
+    x = conv_in_relu(64, 3, 3, stride=(1,1))(x)
+    
+    inverse_net_output = Conv2D(3, (3, 3), padding='same', name='inverse_net_output')(x)
+    
+    x = VGGNormalize()(inverse_net_output)
+    # Use vgg again to train inverse net
+    x = Conv2D(64, (3, 3),activation='relu', padding='same', name='block1_conv1')(x)
+    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv2')(x)
+    x = MaxPooling2D((2, 2), strides=(2, 2), name='block1_pool')(x)
+
+    # Block 2
+    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv1')(x)
+    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv2')(x)
+    x = MaxPooling2D((2, 2), strides=(2, 2), name='block2_pool')(x)
+
+    # Block 3
+    vgg_out = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv1')(x)
+              
+    model = Model(inputs=[swapped_input], outputs=vgg_out)
+   
+    add_total_variation_loss(model.layers[-9], tv_weight)
+      
     return model
 
 # "Fast-style":
@@ -111,8 +147,8 @@ def loss_net(x_in, trux_x_in,width, height,style_image_path,content_weight,style
 
     # Set weights to None to avoid "ValueError: You are trying to load a weight file containing 13 layers into a model with 45 layers."
     vgg = VGG16(include_top=False,input_tensor=x, weights=None)  
-    # You have to specify the path to your model here
-    vgg.load_weights("Your path to the model" + ".keras/models/vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5", by_name=True)
+    # You have to specify the path to your model here, can be changed in file_path.py
+    vgg.load_weights(file_path.KERAS_MODELS_PATH + "vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5", by_name=True)
 
     vgg_output_dict = dict([(layer.name, layer.output) for layer in vgg.layers[-18:]])
     vgg_layers = dict([(layer.name, layer) for layer in vgg.layers[-18:]])
@@ -128,6 +164,33 @@ def loss_net(x_in, trux_x_in,width, height,style_image_path,content_weight,style
         layer.trainable = False
 
     return vgg
+
+# "Distallated Fast-style": For training distallated network, having 2 outputs
+def multi_loss_net(x_in, trux_x_in,width, height,style_image_path,content_weight,style_weight):
+    # Append the initial input to the FastNet input to the VGG inputs
+    x = concatenate([x_in, trux_x_in], axis=0)
+    
+    # Normalize the inputs via custom VGG Normalization layer
+    x = VGGNormalize(name="vgg_normalize")(x)
+
+    vgg = VGG16(include_top=False,input_tensor=x, weights=None)
+    vgg.load_weights("C:/Users/Henry/.keras/models/vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5", by_name=True)
+
+    vgg_output_dict = dict([(layer.name, layer.output) for layer in vgg.layers[-18:]])
+    vgg_layers = dict([(layer.name, layer) for layer in vgg.layers[-18:]])
+
+    if style_weight > 0:
+        add_style_loss(vgg,style_image_path , vgg_layers, vgg_output_dict, width, height,style_weight)   
+
+    if content_weight > 0:
+        add_content_loss(vgg_layers,vgg_output_dict,content_weight)
+
+    # Freeze all VGG layers
+    for layer in vgg.layers[-19:]:
+        layer.trainable = False
+
+    model = Model(inputs=vgg.input, outputs=[vgg.get_layer('transform_output').output, vgg.output])
+    return model
 
 def add_style_loss(vgg,style_image_path,vgg_layers,vgg_output_dict,img_width, img_height,weight):
     style_img = img_util.preprocess_image(style_image_path, img_width, img_height)
