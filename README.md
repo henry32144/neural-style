@@ -3,7 +3,9 @@ Tucana Neural Style in Keras
 
 You can use this website to stylize image by several neural style transfer methods.
 
-this project is implemented mainly in Keras(some part is Tensorflow)
+This project is implemented mainly in Keras 2.1.3 (some part is Tensorflow)
+
+[Demo Video](https://youtu.be/emPLckS9JME)
 
 Result
 ==============================
